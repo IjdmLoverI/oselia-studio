@@ -8,9 +8,16 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { Faqs } from './collections/Faqs'
+import { Leads } from './collections/Leads'
 import { Media } from './collections/Media'
+import { Projects } from './collections/Projects'
+import { Services } from './collections/Services'
+import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { env } from './env'
+import { Pricing } from './globals/Pricing'
+import { SiteSettings } from './globals/SiteSettings'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -32,7 +39,8 @@ export default buildConfig({
     defaultLocale: 'uk',
     fallback: true,
   },
-  collections: [Users, Media],
+  collections: [Projects, Services, Testimonials, Faqs, Media, Leads, Users],
+  globals: [SiteSettings, Pricing],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
   serverURL: env.NEXT_PUBLIC_SITE_URL,
@@ -46,7 +54,7 @@ export default buildConfig({
   plugins: [
     vercelBlobStorage({
       enabled: Boolean(env.BLOB_READ_WRITE_TOKEN),
-      collections: { media: true },
+      collections: { media: { disablePayloadAccessControl: true } },
       token: env.BLOB_READ_WRITE_TOKEN,
     }),
   ],
