@@ -3,6 +3,7 @@ import { Manrope, Unbounded } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
+import { Header } from '@/components/layout/Header'
 import { env } from '@/env'
 import { resolveLocale } from '@/i18n/locale'
 import { routing } from '@/i18n/routing'
@@ -39,11 +40,21 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
 export default async function LocaleLayout({ children, params }: LayoutProps<'/[locale]'>) {
   const locale = resolveLocale((await params).locale)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: 'common' })
 
   return (
     <html lang={locale} className={`${manrope.variable} ${unbounded.variable}`}>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <a
+            href="#content"
+            className="sr-only z-50 rounded-full bg-ink px-5 py-3 text-sand-50 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+          >
+            {t('skipToContent')}
+          </a>
+          <Header />
+          <main id="content">{children}</main>
+        </NextIntlClientProvider>
       </body>
     </html>
   )
