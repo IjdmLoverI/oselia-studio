@@ -33,7 +33,7 @@ export function SectionHeading({
       <p
         className={cn(
           'reveal-fade mb-4 inline-flex items-center gap-2 text-sm font-semibold tracking-wide',
-          tone === 'dark' ? 'text-accent-500' : 'text-accent-700',
+          tone === 'dark' ? 'text-sand-300' : 'text-accent-700',
         )}
       >
         <span className="h-px w-8 bg-current" aria-hidden="true" />
