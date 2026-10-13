@@ -40,6 +40,7 @@
   }
 
   .intro .reveal-word {
+    animation-name: word-rise;
     animation-duration: 0.8s;
     animation-delay: calc(var(--intro-delay) + var(--i, 0) * 40ms);
   }
@@ -252,6 +253,13 @@
 @keyframes word-up {
   from {
     transform: translateY(110%);
+  }
+}
+
+@keyframes word-rise {
+  from {
+    opacity: 0.2;
+    transform: translateY(0.4em);
   }
 }
 
