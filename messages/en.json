@@ -1,9 +1,84 @@
 {
   "meta": {
     "title": "Oselia Studio — apartment and house renovation in Kyiv",
-    "description": "Turnkey renovation, interior design and finishing. Fixed estimate, 3-year warranty."
+    "description": "Turnkey renovation, interior design and finishing. Fixed estimate, weekly photo reports, 3-year warranty."
+  },
+  "common": {
+    "skipToContent": "Skip to content",
+    "home": "Oselia Studio — home"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "services": "Services",
+    "projects": "Projects",
+    "process": "Process",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "cta": "Estimate the cost",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Site language"
   },
   "hero": {
-    "title": "Renovation you will want to live in"
+    "eyebrow": "Renovation & interior design · Kyiv",
+    "lead": "We design, renovate and hand over turnkey. The estimate is fixed in the contract, and every week you get a photo report from the site.",
+    "primary": "Estimate the cost",
+    "secondary": "See our projects",
+    "imageAlt": "Bright living room with a wooden coffee table and terracotta poufs",
+    "badgeTitle": "Fixed estimate",
+    "badgeText": "The contract price stays the same until the work is done",
+    "stats": {
+      "years": "years on the market",
+      "projects": "completed projects",
+      "warranty": "years of warranty"
+    },
+    "titleStart": "Renovation you will want to",
+    "titleAccent": "live in"
+  },
+  "materials": {
+    "stone": "Stone",
+    "oak": "Oak",
+    "terracotta": "Terracotta",
+    "linen": "Linen"
+  },
+  "mood": {
+    "label": "Interior mood",
+    "terracotta": "Terracotta",
+    "olive": "Olive",
+    "graphite": "Graphite"
+  },
+  "cursor": {
+    "view": "View"
+  },
+  "marquee": {
+    "apartments": "Apartments",
+    "houses": "Houses",
+    "kitchens": "Kitchens",
+    "bathrooms": "Bathrooms",
+    "offices": "Offices",
+    "cafes": "Cafés"
+  },
+  "showcase": {
+    "eyebrow": "How we work",
+    "title": "From sketch to reality",
+    "sketch": "Sketch",
+    "result": "Result",
+    "sketchAlt": "Pencil sketch of a living room with a sofa and round mirrors",
+    "photoAlt": "The same living room after the renovation",
+    "steps": {
+      "sketch": {
+        "title": "Measurements and sketches",
+        "text": "We visit the site, take measurements and sketch every room."
+      },
+      "materials": {
+        "title": "Materials and estimate",
+        "text": "We choose materials for your budget and fix the price in the contract."
+      },
+      "build": {
+        "title": "Renovation and handover",
+        "text": "We build to the design, report every week and hand over with a 3-year warranty."
+      }
+    }
   }
 }
