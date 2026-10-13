@@ -43,7 +43,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
         <SectionHeading eyebrow={t('eyebrow')} title={t('title')} />
       </Container>
 
-      <div className="marquee mt-14">
+      <div className="marquee mt-14" role="region" aria-label={t('title')} tabIndex={0}>
         <div className="marquee-track flex w-max gap-6 px-3">
           <ul className="flex gap-6">
             {testimonials.map((testimonial) => (

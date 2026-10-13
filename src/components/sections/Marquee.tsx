@@ -45,7 +45,7 @@ export function Marquee({ items }: { items: string[] }) {
                 key={item}
                 className="flex items-center gap-8 pr-8 font-display text-5xl font-semibold tracking-tight whitespace-nowrap sm:text-7xl"
               >
-                <span className={index % 2 ? 'text-ink/20' : 'text-ink'}>{item}</span>
+                <span className={index % 2 ? 'text-accent-600' : 'text-ink'}>{item}</span>
                 <svg viewBox="0 0 32 32" className="size-8 shrink-0 sm:size-10">
                   <path
                     d="M4 30V15C4 8.4 9.4 3 16 3s12 5.4 12 12v15H4Z"

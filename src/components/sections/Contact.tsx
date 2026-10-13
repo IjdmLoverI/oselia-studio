@@ -30,9 +30,9 @@ export function Contact({ settings }: { settings: SiteSetting }) {
         <div>
           <SectionHeading eyebrow={t('eyebrow')} title={t('title')} lead={t('lead')} tone="dark" />
           <InView amount={0.2}>
-            <dl className="mt-10 grid gap-6 sm:grid-cols-2">
+            <ul className="mt-10 grid gap-6 sm:grid-cols-2">
               {items.map(({ icon: Icon, label, value, href }, index) => (
-                <div
+                <li
                   key={label}
                   className="reveal-fade flex gap-4"
                   style={{ '--d': `${index * 80}ms` } as CSSProperties}
@@ -41,8 +41,8 @@ export function Contact({ settings }: { settings: SiteSetting }) {
                     <Icon className="size-5 text-accent-500" aria-hidden="true" />
                   </span>
                   <div>
-                    <dt className="text-sm text-sand-300">{label}</dt>
-                    <dd className="mt-0.5 font-semibold">
+                    <p className="text-sm text-sand-300">{label}</p>
+                    <p className="mt-0.5 font-semibold">
                       {href ? (
                         <a href={href} className="hover:text-accent-500">
                           {value}
@@ -50,11 +50,11 @@ export function Contact({ settings }: { settings: SiteSetting }) {
                       ) : (
                         value
                       )}
-                    </dd>
+                    </p>
                   </div>
-                </div>
+                </li>
               ))}
-            </dl>
+            </ul>
           </InView>
         </div>
 

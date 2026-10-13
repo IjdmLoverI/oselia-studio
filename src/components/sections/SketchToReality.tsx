@@ -72,14 +72,39 @@ export function SketchToReality({
               {steps.map((step, index) => (
                 <li
                   key={step.title}
+                  aria-current={index === active ? 'step' : undefined}
                   className={cn(
-                    'border-l-2 pl-5 transition-all duration-500',
-                    index === active ? 'border-accent-500 opacity-100' : 'border-ink/10 opacity-40',
+                    'border-l-2 pl-5 transition-colors duration-500',
+                    index === active ? 'border-accent-500' : 'border-ink/10',
                   )}
                 >
-                  <p className="font-display text-sm font-semibold text-accent-700">0{index + 1}</p>
-                  <p className="mt-1 text-lg font-semibold">{step.title}</p>
-                  <p className="mt-1 text-muted">{step.text}</p>
+                  <p
+                    className={cn(
+                      'font-display text-sm font-semibold transition-colors duration-500',
+                      index === active ? 'text-accent-700' : 'text-muted',
+                    )}
+                  >
+                    0{index + 1}
+                  </p>
+                  <p
+                    className={cn(
+                      'mt-1 text-lg font-semibold transition-colors duration-500',
+                      index === active ? 'text-ink' : 'text-muted',
+                    )}
+                  >
+                    {step.title}
+                  </p>
+                  <p
+                    className={cn(
+                      'mt-1 transition-[opacity,max-height] duration-500',
+                      index === active
+                        ? 'max-h-40 text-muted'
+                        : 'max-h-0 overflow-hidden opacity-0',
+                    )}
+                    aria-hidden={index !== active}
+                  >
+                    {step.text}
+                  </p>
                 </li>
               ))}
             </ol>

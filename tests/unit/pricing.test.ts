@@ -20,7 +20,10 @@ describe('estimatePrice', () => {
   })
 
   it('adds per-square-metre and fixed extras', () => {
-    const result = estimatePrice({ area: 50, type: 'capital', extras: ['design', 'cleanup'] }, rates)
+    const result = estimatePrice(
+      { area: 50, type: 'capital', extras: ['design', 'cleanup'] },
+      rates,
+    )
     expect(result.total).toBe(50 * 9800 + 50 * 900 + 6500)
   })
 

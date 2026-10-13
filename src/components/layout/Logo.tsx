@@ -9,7 +9,7 @@ export function Logo({ className }: { className?: string }) {
       </svg>
       <span className="font-display text-lg leading-none font-semibold tracking-tight">
         Oselia
-        <span className="ml-1.5 align-top text-[0.6rem] font-medium tracking-[0.2em] text-muted uppercase">
+        <span className="ml-1.5 align-top text-[0.6rem] font-medium tracking-[0.2em] uppercase opacity-70">
           Studio
         </span>
       </span>
