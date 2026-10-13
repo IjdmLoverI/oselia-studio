@@ -3,7 +3,7 @@
 import { Check, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useActionState, useId, useState, type ReactNode } from 'react'
+import { useActionState, useId, useRef, useState, type ReactNode } from 'react'
 
 import { submitLead, type LeadState } from '@/actions/submit-lead'
 import { buttonStyles } from '@/components/ui/Button'
@@ -47,17 +47,26 @@ export function ContactForm() {
   const locale = useLocale()
   const id = useId()
   const estimate = useSavedEstimate()
-  const [startedAt, setStartedAt] = useState(0)
-  const [state, action, pending] = useActionState(submitLead, initialState)
+  const firstFocus = useRef<number | null>(null)
+  const [state, dispatch, pending] = useActionState(submitLead, initialState)
   const [dismissed, setDismissed] = useState<LeadState | null>(null)
 
   const shown = state === dismissed ? initialState : state
   const invalid = shown.status === 'invalid' ? shown.fields : {}
   const errorMessage = shown.status === 'error' ? t(`errors.${shown.reason}`) : null
 
+  const submit = (formData: FormData) => {
+    const started = firstFocus.current
+    formData.set(
+      'fillTime',
+      started === null ? '0' : String(Math.round(performance.now() - started)),
+    )
+    dispatch(formData)
+  }
+
   const reset = () => {
     setDismissed(state)
-    setStartedAt(0)
+    firstFocus.current = null
   }
 
   return (
@@ -93,8 +102,10 @@ export function ContactForm() {
         ) : (
           <motion.form
             key="form"
-            action={action}
-            onFocusCapture={() => startedAt === 0 && setStartedAt(Date.now())}
+            action={submit}
+            onFocusCapture={() => {
+              firstFocus.current ??= performance.now()
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -102,7 +113,6 @@ export function ContactForm() {
             className="space-y-5"
           >
             <input type="hidden" name="locale" value={locale} />
-            <input type="hidden" name="startedAt" value={startedAt} />
             <div className="absolute -left-[9999px]" aria-hidden="true">
               <label>
                 Company
