@@ -9,6 +9,10 @@ const schema = z.object({
   TELEGRAM_BOT_TOKEN: optional,
   TELEGRAM_CHAT_ID: optional,
   BLOB_READ_WRITE_TOKEN: optional,
+  SITE_INDEXING: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
 })
 
 export const env = schema.parse(process.env)

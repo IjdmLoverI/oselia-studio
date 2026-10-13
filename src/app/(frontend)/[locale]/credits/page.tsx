@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Container } from '@/components/ui/Container'
 import { resolveLocale } from '@/i18n/locale'
 import { getMediaCredits } from '@/lib/content'
+import { localizedAlternates } from '@/lib/seo'
 
 const brandPhotos = [
   { author: 'Spacejoy', url: 'https://unsplash.com/photos/9M66C_w_ToM' },
@@ -13,11 +14,9 @@ const brandPhotos = [
 export async function generateMetadata({
   params,
 }: PageProps<'/[locale]/credits'>): Promise<Metadata> {
-  const t = await getTranslations({
-    locale: resolveLocale((await params).locale),
-    namespace: 'credits',
-  })
-  return { title: t('title'), robots: { index: false } }
+  const locale = resolveLocale((await params).locale)
+  const t = await getTranslations({ locale, namespace: 'credits' })
+  return { title: t('title'), alternates: localizedAlternates(locale, '/credits') }
 }
 
 export default async function CreditsPage({ params }: PageProps<'/[locale]/credits'>) {

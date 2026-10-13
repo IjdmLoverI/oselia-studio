@@ -14,8 +14,8 @@ import { CmsImage } from '@/components/ui/CmsImage'
 import { Container } from '@/components/ui/Container'
 import { resolveLocale } from '@/i18n/locale'
 import { Link } from '@/i18n/navigation'
-import { routing } from '@/i18n/routing'
 import { getProject, getProjects, getTestimonials } from '@/lib/content'
+import { baseMetadata, localizedAlternates } from '@/lib/seo'
 import { asMedia } from '@/lib/media'
 
 type Props = PageProps<'/[locale]/projects/[slug]'>
@@ -35,13 +35,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: project.title,
     description: project.summary,
-    alternates: {
-      canonical: `/${locale}/projects/${slug}`,
-      languages: Object.fromEntries(
-        routing.locales.map((code) => [code, `/${code}/projects/${slug}`]),
-      ),
+    alternates: localizedAlternates(locale, `/projects/${slug}`),
+    openGraph: {
+      ...baseMetadata(locale).openGraph,
+      title: project.title,
+      description: project.summary,
+      images: cover?.url ? [{ url: cover.url, alt: cover.alt }] : undefined,
     },
-    openGraph: cover?.url ? { images: [{ url: cover.url, alt: cover.alt }] } : undefined,
   }
 }
 

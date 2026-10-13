@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
 import { Contact } from '@/components/sections/Contact'
@@ -9,6 +10,7 @@ import { Projects } from '@/components/sections/Projects'
 import { Services } from '@/components/sections/Services'
 import { SketchToReality } from '@/components/sections/SketchToReality'
 import { Testimonials } from '@/components/sections/Testimonials'
+import { BusinessJsonLd } from '@/components/seo/BusinessJsonLd'
 import { resolveLocale } from '@/i18n/locale'
 import {
   getFaqs,
@@ -18,9 +20,14 @@ import {
   getSiteSettings,
   getTestimonials,
 } from '@/lib/content'
+import { localizedAlternates } from '@/lib/seo'
 
 const marqueeItems = ['apartments', 'houses', 'kitchens', 'bathrooms', 'offices', 'cafes'] as const
 const steps = ['sketch', 'materials', 'build'] as const
+
+export async function generateMetadata({ params }: PageProps<'/[locale]'>): Promise<Metadata> {
+  return { alternates: localizedAlternates(resolveLocale((await params).locale)) }
+}
 
 export default async function HomePage({ params }: PageProps<'/[locale]'>) {
   const locale = resolveLocale((await params).locale)
@@ -38,6 +45,7 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
 
   return (
     <>
+      <BusinessJsonLd settings={settings} locale={locale} description={t('meta.description')} />
       <Hero
         stats={[
           { key: 'years', value: settings.stats.years },

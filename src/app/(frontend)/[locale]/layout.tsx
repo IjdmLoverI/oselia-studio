@@ -10,10 +10,10 @@ import { Preloader } from '@/components/layout/Preloader'
 import { Cursor } from '@/components/motion/Cursor'
 import { MotionProvider } from '@/components/motion/MotionProvider'
 import { SmoothScroll } from '@/components/motion/SmoothScroll'
-import { env } from '@/env'
 import { resolveLocale } from '@/i18n/locale'
 import { routing } from '@/i18n/routing'
 import { getSiteSettings } from '@/lib/content'
+import { baseMetadata } from '@/lib/seo'
 
 import '../globals.css'
 
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
   const t = await getTranslations({ locale, namespace: 'meta' })
 
   return {
-    metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
+    ...baseMetadata(locale),
     title: { default: t('title'), template: '%s · Oselia Studio' },
     description: t('description'),
   }
