@@ -6,10 +6,7 @@ import { resolveLocale } from '@/i18n/locale'
 import { getMediaCredits } from '@/lib/content'
 import { localizedAlternates } from '@/lib/seo'
 
-const brandPhotos = [
-  { author: 'Spacejoy', url: 'https://unsplash.com/photos/9M66C_w_ToM' },
-  { author: 'Kelly Sikkema', url: 'https://unsplash.com/photos/v9FQR4tbIq8' },
-]
+const brandPhotos = [{ author: 'Spacejoy', url: 'https://unsplash.com/photos/9M66C_w_ToM' }]
 
 export async function generateMetadata({
   params,
