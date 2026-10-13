@@ -3,14 +3,17 @@ import { Manrope, Unbounded } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
+import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
 import { MoodSwitcher } from '@/components/layout/MoodSwitcher'
 import { Preloader } from '@/components/layout/Preloader'
 import { Cursor } from '@/components/motion/Cursor'
+import { MotionProvider } from '@/components/motion/MotionProvider'
 import { SmoothScroll } from '@/components/motion/SmoothScroll'
 import { env } from '@/env'
 import { resolveLocale } from '@/i18n/locale'
 import { routing } from '@/i18n/routing'
+import { getSiteSettings } from '@/lib/content'
 
 import '../globals.css'
 
@@ -46,7 +49,10 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
 export default async function LocaleLayout({ children, params }: LayoutProps<'/[locale]'>) {
   const locale = resolveLocale((await params).locale)
   setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: 'common' })
+  const [t, settings] = await Promise.all([
+    getTranslations({ locale, namespace: 'common' }),
+    getSiteSettings(locale),
+  ])
 
   return (
     <html
@@ -60,17 +66,20 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
       <body>
         <Preloader />
         <NextIntlClientProvider>
-          <a
-            href="#content"
-            className="sr-only z-50 rounded-full bg-ink px-5 py-3 text-sand-50 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
-          >
-            {t('skipToContent')}
-          </a>
-          <Header />
-          <main id="content">{children}</main>
-          <MoodSwitcher />
-          <Cursor />
-          <SmoothScroll />
+          <MotionProvider>
+            <a
+              href="#content"
+              className="sr-only z-50 rounded-full bg-ink px-5 py-3 text-sand-50 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+            >
+              {t('skipToContent')}
+            </a>
+            <Header />
+            <main id="content">{children}</main>
+            <Footer settings={settings} />
+            <MoodSwitcher />
+            <Cursor />
+            <SmoothScroll />
+          </MotionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

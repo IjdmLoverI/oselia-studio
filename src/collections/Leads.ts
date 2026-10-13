@@ -26,7 +26,7 @@ export const Leads: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'name', type: 'text', required: true, label: { uk: "Ім'я", en: 'Name' } },
+        { name: 'name', type: 'text', required: true, label: { uk: 'Ім’я', en: 'Name' } },
         { name: 'phone', type: 'text', required: true, label: { uk: 'Телефон', en: 'Phone' } },
       ],
     },

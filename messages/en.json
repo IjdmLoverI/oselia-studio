@@ -80,5 +80,135 @@
         "text": "We build to the design, report every week and hand over with a 3-year warranty."
       }
     }
+  },
+  "services": {
+    "eyebrow": "Services",
+    "title": "We take care of the whole renovation",
+    "lead": "From the first sketch to the final clean-up. One team, one contract and one person responsible for the result.",
+    "priceFrom": "from {price, number} UAH/m²"
+  },
+  "projects": {
+    "eyebrow": "Projects",
+    "title": "Interiors we have already handed over",
+    "lead": "Every project started as a sketch. Open any of them to see what it looked like on paper.",
+    "filter": "Project type",
+    "all": "All",
+    "categories": {
+      "apartment": "Apartments",
+      "house": "Houses",
+      "kitchen": "Kitchens",
+      "bathroom": "Bathrooms",
+      "commercial": "Commercial"
+    },
+    "area": "{area, number} m²",
+    "weeks": "{weeks, plural, one {# week} other {# weeks}}"
+  },
+  "calculator": {
+    "eyebrow": "Pricing",
+    "title": "Estimate your renovation in a minute",
+    "lead": "Choose the area, the type of renovation and any extras. The rates come from our current price list.",
+    "area": "Area",
+    "areaValue": "{area, number} m²",
+    "decrease": "Decrease area",
+    "increase": "Increase area",
+    "type": "Renovation type",
+    "types": {
+      "cosmetic": "Cosmetic",
+      "capital": "Full",
+      "designer": "Designer"
+    },
+    "perSqm": "{price, number} UAH/m²",
+    "extras": "Extras",
+    "extraPerSqm": "+{price, number} UAH/m²",
+    "extraFixed": "+{price, number} UAH",
+    "result": "Estimated labour cost",
+    "from": "from",
+    "to": "to",
+    "currency": "UAH",
+    "note": "Materials not included. The exact sum goes into the contract after a free site visit.",
+    "cta": "Get an exact estimate",
+    "summary": "{area, number} m², {type}",
+    "range": "{min, number} – {max, number} UAH"
+  },
+  "testimonials": {
+    "eyebrow": "Reviews",
+    "title": "What our clients say",
+    "rating": "Rated {rating} out of 5"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Answers before you ask",
+    "lead": "Did not find your answer? Write to us and we will reply within an hour during working hours.",
+    "cta": "Ask a question"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Tell us about your place",
+    "lead": "We call back within 30 minutes during working hours and book a free site visit.",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Office",
+    "hours": "Hours",
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "How should we call you",
+      "phone": "Phone",
+      "phonePlaceholder": "+380 67 123 45 67",
+      "message": "Comment",
+      "messagePlaceholder": "Apartment or house, area, wishes",
+      "consent": "I agree to the processing of my personal data",
+      "submit": "Send request",
+      "sending": "Sending…",
+      "estimate": "Calculator estimate",
+      "removeEstimate": "Remove the estimate",
+      "successTitle": "Thank you! We got your request",
+      "successText": "Our manager will call you shortly.",
+      "again": "Send another one",
+      "errors": {
+        "name": "Please enter your name",
+        "phone": "Please check the phone number",
+        "consent": "We need your consent",
+        "tooFast": "The form was sent too quickly. Please try again in a few seconds.",
+        "rateLimited": "Too many requests from your network. Try later or give us a call.",
+        "server": "Could not send it. Please try again or give us a call."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Renovation and interior design in Kyiv and the region.",
+    "navigation": "Navigation",
+    "contacts": "Contact",
+    "disclaimer": "A concept site for a portfolio. The company, contacts and reviews are fictional.",
+    "photos": "Photos: Unsplash",
+    "rights": "© {year} Oselia Studio"
+  },
+  "project": {
+    "back": "All projects",
+    "area": "Area",
+    "duration": "Duration",
+    "budget": "Budget from",
+    "year": "Year",
+    "budgetValue": "{value, number} UAH",
+    "compare": "Sketch and result",
+    "compareLabel": "Compare the sketch with the finished interior",
+    "sketch": "Sketch",
+    "result": "Result",
+    "story": "How it went",
+    "gallery": "Gallery",
+    "work": "What we did",
+    "next": "Next project",
+    "ctaTitle": "Want the same?",
+    "ctaText": "Estimate the cost or leave a request, and we will measure your place for free.",
+    "ctaButton": "Estimate the cost"
+  },
+  "credits": {
+    "title": "Photos",
+    "lead": "All photos on this site come from Unsplash under the Unsplash License. The sketches are generated from those photos. Thanks to the authors.",
+    "author": "Author"
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "text": "It may have moved, or the link has a typo.",
+    "home": "Back home"
   }
 }

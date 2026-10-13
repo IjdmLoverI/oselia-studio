@@ -43,7 +43,6 @@ export default buildConfig({
   globals: [SiteSettings, Pricing],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
-  serverURL: env.NEXT_PUBLIC_SITE_URL,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

@@ -14,7 +14,7 @@ export const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
-      label: { uk: "Ім'я", en: 'Name' },
+      label: { uk: 'Ім’я', en: 'Name' },
     },
   ],
 }
