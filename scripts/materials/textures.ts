@@ -1,15 +1,6 @@
-const textures = {
+export const textures = {
   stone: `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='v'><feTurbulence type='turbulence' baseFrequency='0.009 0.026' numOctaves='4' seed='21'/><feColorMatrix type='matrix' values='0 0 0 0 0.42 0 0 0 0 0.39 0 0 0 0 0.36 -11 0 0 0 1.2'/><feGaussianBlur stdDeviation='0.4'/></filter><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.01' numOctaves='3' seed='8'/><feColorMatrix type='matrix' values='0 0 0 0 0.8 0 0 0 0 0.77 0 0 0 0 0.73 0 0 0 -1.4 0.8'/></filter><rect width='300' height='300' fill='#efebe5'/><rect width='300' height='300' filter='url(#c)' opacity='.5'/><rect width='300' height='300' filter='url(#v)' opacity='.75'/></svg>`,
   oak: `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.004 0.11' numOctaves='4' seed='3'/><feColorMatrix type='matrix' values='0 0 0 0 0.56 0 0 0 0 0.38 0 0 0 0 0.22 0 0 0 -1.9 1.25'/></filter><rect width='300' height='300' fill='#c39a6b'/><rect width='300' height='300' filter='url(#w)'/></svg>`,
   terracotta: `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='t'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' seed='5'/><feColorMatrix type='matrix' values='0 0 0 0 0.45 0 0 0 0 0.2 0 0 0 0 0.08 0 0 0 -1.2 0.75'/></filter><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' seed='9'/><feColorMatrix type='matrix' values='0 0 0 0 0.86 0 0 0 0 0.5 0 0 0 0 0.32 0 0 0 -1.6 1'/></filter><rect width='300' height='300' fill='#c4622d'/><rect width='300' height='300' filter='url(#c)' opacity='.6'/><rect width='300' height='300' filter='url(#t)'/></svg>`,
   linen: `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='h'><feTurbulence type='fractalNoise' baseFrequency='0.9 0.035' numOctaves='2' seed='2'/><feColorMatrix type='matrix' values='0 0 0 0 0.5 0 0 0 0 0.46 0 0 0 0 0.4 0 0 0 -1.4 0.95'/></filter><filter id='v'><feTurbulence type='fractalNoise' baseFrequency='0.035 0.9' numOctaves='2' seed='4'/><feColorMatrix type='matrix' values='0 0 0 0 0.98 0 0 0 0 0.96 0 0 0 0 0.92 0 0 0 -1.4 0.95'/></filter><rect width='300' height='300' fill='#d9cfc1'/><rect width='300' height='300' filter='url(#h)' opacity='.8'/><rect width='300' height='300' filter='url(#v)' opacity='.7'/></svg>`,
 }
-
-export type Material = keyof typeof textures
-
-export const materialTexture = Object.fromEntries(
-  Object.entries(textures).map(([name, svg]) => [
-    name,
-    `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
-  ]),
-) as Record<Material, string>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { Suspense } from 'react'
 
 import { Contact } from '@/components/sections/Contact'
 import { Faq } from '@/components/sections/Faq'
@@ -54,24 +55,38 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
         ]}
       />
       <Marquee items={marqueeItems.map((item) => t(`marquee.${item}`))} />
-      <Services services={services} />
-      <SketchToReality
-        eyebrow={t('showcase.eyebrow')}
-        title={t('showcase.title')}
-        sketchLabel={t('showcase.sketch')}
-        resultLabel={t('showcase.result')}
-        sketchAlt={t('showcase.sketchAlt')}
-        photoAlt={t('showcase.photoAlt')}
-        steps={steps.map((step) => ({
-          title: t(`showcase.steps.${step}.title`),
-          text: t(`showcase.steps.${step}.text`),
-        }))}
-      />
-      <Projects projects={projects} />
-      <PricingSection pricing={pricing} />
-      <Testimonials testimonials={testimonials} />
-      <Faq faqs={faqs} />
-      <Contact settings={settings} />
+      <Suspense>
+        <Services services={services} />
+      </Suspense>
+      <Suspense>
+        <SketchToReality
+          eyebrow={t('showcase.eyebrow')}
+          title={t('showcase.title')}
+          sketchLabel={t('showcase.sketch')}
+          resultLabel={t('showcase.result')}
+          sketchAlt={t('showcase.sketchAlt')}
+          photoAlt={t('showcase.photoAlt')}
+          steps={steps.map((step) => ({
+            title: t(`showcase.steps.${step}.title`),
+            text: t(`showcase.steps.${step}.text`),
+          }))}
+        />
+      </Suspense>
+      <Suspense>
+        <Projects projects={projects} />
+      </Suspense>
+      <Suspense>
+        <PricingSection pricing={pricing} />
+      </Suspense>
+      <Suspense>
+        <Testimonials testimonials={testimonials} />
+      </Suspense>
+      <Suspense>
+        <Faq faqs={faqs} />
+      </Suspense>
+      <Suspense>
+        <Contact settings={settings} />
+      </Suspense>
     </>
   )
 }
