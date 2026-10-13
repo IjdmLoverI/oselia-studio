@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'motion/react'
+import { useMotionValue, useSpring, useTransform, type MotionValue } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useEffect, type CSSProperties } from 'react'
 
 import linen from '@/assets/materials/linen.webp'
@@ -105,7 +106,7 @@ function SphereItem({
   const shiftY = useTransform(y, (value) => value * sphere.depth * -70)
 
   return (
-    <motion.div style={{ x: shiftX, y: shiftY }} className={cn('absolute', sphere.position)}>
+    <m.div style={{ x: shiftX, y: shiftY }} className={cn('absolute', sphere.position)}>
       <div className="intro-fade" style={{ '--d': `${sphere.delay}ms` } as CSSProperties}>
         <div className="float-slow group" style={{ animationDuration: `${sphere.float}s` }}>
           <span
@@ -122,6 +123,6 @@ function SphereItem({
           </span>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   )
 }

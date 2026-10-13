@@ -1,7 +1,8 @@
 'use client'
 
 import { Check, X } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useLocale, useTranslations } from 'next-intl'
 import { useActionState, useId, useRef, useState, type ReactNode } from 'react'
 
@@ -73,7 +74,7 @@ export function ContactForm() {
     <div className="relative overflow-hidden rounded-card bg-white p-6 text-ink shadow-card sm:p-8">
       <AnimatePresence mode="wait" initial={false}>
         {shown.status === 'success' ? (
-          <motion.div
+          <m.div
             key="success"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -81,14 +82,14 @@ export function ContactForm() {
             className="flex min-h-96 flex-col items-center justify-center text-center"
             role="status"
           >
-            <motion.span
+            <m.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
               className="grid size-16 place-items-center rounded-full bg-accent-600 text-white"
             >
               <Check className="size-8" aria-hidden="true" />
-            </motion.span>
+            </m.span>
             <p className="mt-6 font-display text-2xl font-semibold">{t('successTitle')}</p>
             <p className="mt-2 text-muted">{t('successText')}</p>
             <button
@@ -98,9 +99,9 @@ export function ContactForm() {
             >
               {t('again')}
             </button>
-          </motion.div>
+          </m.div>
         ) : (
-          <motion.form
+          <m.form
             key="form"
             action={submit}
             onFocusCapture={() => {
@@ -227,7 +228,7 @@ export function ContactForm() {
             >
               {pending ? t('sending') : t('submit')}
             </button>
-          </motion.form>
+          </m.form>
         )}
       </AnimatePresence>
     </div>

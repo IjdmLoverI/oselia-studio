@@ -1,13 +1,8 @@
 'use client'
 
 import { MoveHorizontal } from 'lucide-react'
-import {
-  motion,
-  useMotionTemplate,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-} from 'motion/react'
+import { useMotionTemplate, useMotionValueEvent, useScroll, useTransform } from 'motion/react'
+import * as m from 'motion/react-m'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 
@@ -117,7 +112,7 @@ export function SketchToReality({
           </div>
 
           <div>
-            <motion.div
+            <m.div
               style={{ scale }}
               className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-card"
             >
@@ -128,7 +123,7 @@ export function SketchToReality({
                 sizes="(min-width: 1024px) 55vw, 100vw"
                 className="object-cover"
               />
-              <motion.div style={{ clipPath }} className="absolute inset-0">
+              <m.div style={{ clipPath }} className="absolute inset-0">
                 <Image
                   src={photo}
                   alt={photoAlt}
@@ -136,24 +131,24 @@ export function SketchToReality({
                   sizes="(min-width: 1024px) 55vw, 100vw"
                   className="object-cover"
                 />
-              </motion.div>
-              <motion.div
+              </m.div>
+              <m.div
                 style={{ left: handle, opacity: handleOpacity }}
                 className="absolute inset-y-0 w-0.5 -translate-x-1/2 bg-white/90"
               >
                 <span className="absolute top-1/2 left-1/2 grid size-11 -translate-1/2 place-items-center rounded-full bg-white text-ink shadow-card">
                   <MoveHorizontal className="size-5" aria-hidden="true" />
                 </span>
-              </motion.div>
+              </m.div>
               <span className="absolute top-4 left-4 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold backdrop-blur">
                 {resultLabel}
               </span>
               <span className="absolute top-4 right-4 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold backdrop-blur">
                 {sketchLabel}
               </span>
-            </motion.div>
+            </m.div>
             <div className="mt-5 h-1 overflow-hidden rounded-full bg-ink/10">
-              <motion.div
+              <m.div
                 style={{ scaleX: progress }}
                 className="h-full origin-left rounded-full bg-accent-500"
               />
