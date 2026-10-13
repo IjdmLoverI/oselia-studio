@@ -25,7 +25,13 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
-    meta: { titleSuffix: ' · Oselia Studio' },
+    meta: { titleSuffix: ' · Oselia Studio', icons: [{ url: '/icon.svg', type: 'image/svg+xml' }] },
+    components: {
+      graphics: {
+        Logo: '@/components/admin/AdminLogo#AdminLogo',
+        Icon: '@/components/admin/AdminIcon#AdminIcon',
+      },
+    },
   },
   i18n: {
     supportedLanguages: { uk, en },
@@ -43,7 +49,6 @@ export default buildConfig({
   globals: [SiteSettings, Pricing],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
-  serverURL: env.NEXT_PUBLIC_SITE_URL,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

@@ -1,0 +1,17 @@
+'use client'
+
+import { motion, useSpring, useTransform } from 'motion/react'
+import { useFormatter } from 'next-intl'
+import { useEffect } from 'react'
+
+export function AnimatedNumber({ value }: { value: number }) {
+  const format = useFormatter()
+  const spring = useSpring(value, { stiffness: 90, damping: 22 })
+  const text = useTransform(spring, (latest) => format.number(Math.round(latest / 1000) * 1000))
+
+  useEffect(() => {
+    spring.set(value)
+  }, [spring, value])
+
+  return <motion.span className="tabular-nums">{text}</motion.span>
+}
