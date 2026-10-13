@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import * as m from 'motion/react-m'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -28,6 +28,7 @@ const categoryOrder: Category[] = ['apartment', 'house', 'kitchen', 'bathroom', 
 export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
   const t = useTranslations()
   const [filter, setFilter] = useState<Category | 'all'>('all')
+  const [filtered, setFiltered] = useState(false)
 
   const categories = categoryOrder.filter((category) =>
     projects.some((project) => project.category === category),
@@ -43,7 +44,10 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
             key={category}
             type="button"
             aria-pressed={filter === category}
-            onClick={() => setFilter(category)}
+            onClick={() => {
+              setFilter(category)
+              setFiltered(true)
+            }}
             className={cn(
               'rounded-full border px-4 py-2 text-sm font-semibold transition-colors',
               filter === category
@@ -56,55 +60,52 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
         ))}
       </div>
 
-      <motion.ul layout className="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout" initial={false}>
-          {visible.map((project, index) => (
-            <motion.li
-              key={project.id}
-              layout
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.5, ease }}
+      <m.ul layout className="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        {visible.map((project, index) => (
+          <m.li
+            key={project.id}
+            layout
+            initial={filtered ? { opacity: 0, y: 24 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <Link
+              href={`/projects/${project.slug}`}
+              data-cursor={t('cursor.view')}
+              className="group block rounded-card"
             >
-              <Link
-                href={`/projects/${project.slug}`}
-                data-cursor={t('cursor.view')}
-                className="group block rounded-card"
+              <m.div
+                initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
+                whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 1.2, ease, delay: (index % 3) * 0.1 }}
+                className="relative aspect-[4/5] overflow-hidden rounded-card bg-sand-200"
               >
-                <motion.div
-                  initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
-                  whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 1.2, ease, delay: (index % 3) * 0.1 }}
-                  className="relative aspect-[4/5] overflow-hidden rounded-card bg-sand-200"
-                >
-                  <Image
-                    src={project.cover.url}
-                    alt={project.cover.alt}
-                    fill
-                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                    placeholder={project.cover.blurDataURL ? 'blur' : 'empty'}
-                    blurDataURL={project.cover.blurDataURL}
-                    className="object-cover transition-transform duration-[1.2s] ease-(--ease-out-expo) group-hover:scale-105"
-                  />
-                </motion.div>
-                <div className="mt-5 flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="font-display text-xl font-semibold">{project.title}</h3>
-                    <p className="mt-1 text-muted">{project.district}</p>
-                  </div>
-                  <p className="shrink-0 text-right text-sm font-semibold text-ink/70">
-                    {t('projects.area', { area: project.area })}
-                    <br />
-                    {t('projects.weeks', { weeks: project.weeks })}
-                  </p>
+                <Image
+                  src={project.cover.url}
+                  alt={project.cover.alt}
+                  fill
+                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                  placeholder={project.cover.blurDataURL ? 'blur' : 'empty'}
+                  blurDataURL={project.cover.blurDataURL}
+                  className="object-cover transition-transform duration-[1.2s] ease-(--ease-out-expo) group-hover:scale-105"
+                />
+              </m.div>
+              <div className="mt-5 flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-display text-xl font-semibold">{project.title}</h3>
+                  <p className="mt-1 text-muted">{project.district}</p>
                 </div>
-              </Link>
-            </motion.li>
-          ))}
-        </AnimatePresence>
-      </motion.ul>
+                <p className="shrink-0 text-right text-sm font-semibold text-ink/70">
+                  {t('projects.area', { area: project.area })}
+                  <br />
+                  {t('projects.weeks', { weeks: project.weeks })}
+                </p>
+              </div>
+            </Link>
+          </m.li>
+        ))}
+      </m.ul>
     </>
   )
 }

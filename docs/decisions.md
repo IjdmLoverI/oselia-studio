@@ -65,6 +65,21 @@ Short notes on the main choices and what they cost.
 - **Lenis** adds inertia to wheel scrolling, which suits the editorial style. It runs on fine
   pointers only, because touch scrolling is already smooth and should stay native.
 
+**Lazy features.** Motion's animation, gesture and layout features load after hydration.
+
+- **Measured.** Lighthouse with devtools network throttling on the mobile profile compared the
+  page with and without lazy features, interleaving the runs so that machine load hit both
+  equally. Over four pairs the median total blocking time fell from about 520 ms to 400 ms.
+  LCP and FCP stayed the same.
+- **The catch.** Exit animations through `AnimatePresence` can stall if an element mounts in
+  the same render that delivers the features. The project filter therefore does without
+  them: cards that no longer match simply leave, and the rest move with layout animations.
+- **Where `AnimatePresence` stays.**
+  - The contact form cannot change until at least three seconds after the first focus, long
+    after the features have arrived.
+  - The cursor label could only stall with a hover in the first moments after load, and the
+    worst case is a label left on screen.
+
 **Considered: GSAP with ScrollTrigger.** It is more capable for complex timelines, but heavier
 than this page needs, and Motion's React API fits the component model better.
 

@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useSpring, useTransform } from 'motion/react'
+import { useSpring, useTransform } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useFormatter } from 'next-intl'
 import { useEffect } from 'react'
 
@@ -13,5 +14,5 @@ export function AnimatedNumber({ value }: { value: number }) {
     spring.set(value)
   }, [spring, value])
 
-  return <motion.span className="tabular-nums">{text}</motion.span>
+  return <m.span className="tabular-nums">{text}</m.span>
 }

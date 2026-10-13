@@ -1,8 +1,14 @@
 'use client'
 
-import { MotionConfig } from 'motion/react'
+import { LazyMotion, MotionConfig } from 'motion/react'
 import type { ReactNode } from 'react'
 
+const loadFeatures = () => import('./features').then((module) => module.default)
+
 export function MotionProvider({ children }: { children: ReactNode }) {
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>
+  return (
+    <LazyMotion features={loadFeatures} strict>
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+    </LazyMotion>
+  )
 }

@@ -1,16 +1,19 @@
 'use client'
 
 import {
-  motion,
-  useAnimationFrame,
+  cancelFrame,
+  frame,
+  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   useVelocity,
+  type FrameData,
 } from 'motion/react'
-import { useRef } from 'react'
+import * as m from 'motion/react-m'
+import { useEffect, useRef } from 'react'
 
 const wrap = (min: number, max: number, value: number) => {
   const range = max - min
@@ -18,6 +21,8 @@ const wrap = (min: number, max: number, value: number) => {
 }
 
 export function Marquee({ items }: { items: string[] }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref)
   const reducedMotion = useReducedMotion()
   const offset = useMotionValue(0)
   const { scrollY } = useScroll()
@@ -26,18 +31,26 @@ export function Marquee({ items }: { items: string[] }) {
   const x = useTransform(offset, (value) => `${wrap(-50, 0, value)}%`)
   const direction = useRef(-1)
 
-  useAnimationFrame((_, delta) => {
-    if (reducedMotion) return
-    const factor = boost.get()
-    if (factor < 0) direction.current = 1
-    else if (factor > 0) direction.current = -1
-    const step = direction.current * 1.6 * (delta / 1000)
-    offset.set(offset.get() + step + step * Math.abs(factor))
-  })
+  useEffect(() => {
+    if (reducedMotion || !inView) return
+    const tick = ({ delta }: FrameData) => {
+      const factor = boost.get()
+      if (factor < 0) direction.current = 1
+      else if (factor > 0) direction.current = -1
+      const step = direction.current * 1.6 * (delta / 1000)
+      offset.set(offset.get() + step + step * Math.abs(factor))
+    }
+    frame.update(tick, true)
+    return () => cancelFrame(tick)
+  }, [reducedMotion, inView, boost, offset])
 
   return (
-    <div aria-hidden="true" className="overflow-hidden border-y border-ink/10 py-8 sm:py-10">
-      <motion.div style={{ x }} className="flex w-max">
+    <div
+      ref={ref}
+      aria-hidden="true"
+      className="overflow-hidden border-y border-ink/10 py-8 sm:py-10"
+    >
+      <m.div style={{ x }} className="flex w-max">
         {[0, 1].map((copy) => (
           <div key={copy} className="flex shrink-0 items-center">
             {items.map((item, index) => (
@@ -56,7 +69,7 @@ export function Marquee({ items }: { items: string[] }) {
             ))}
           </div>
         ))}
-      </motion.div>
+      </m.div>
     </div>
   )
 }

@@ -105,7 +105,9 @@ the pointer.
     long intro play only once per session.
   - Headings reveal word by word through masks.
   - The hero arch opens with a transform-based curtain.
-  - On screens narrower than 768 px the preloader is skipped and the intro is shorter.
+  - On screens narrower than 768 px the preloader is skipped and the intro is shorter. The
+    headline words start partly visible and rise into place, so the browser counts the
+    headline as the largest paint right away.
 - **Scroll reveals.** `InView` (Motion's `useInView`) only flips `data-reveal` to `visible` once
   an element enters the viewport. CSS transitions do the animation.
 - **Reviews.** The strip loops with a CSS animation and pauses on hover or keyboard focus.
@@ -114,9 +116,16 @@ the pointer.
 
 **Motion for React**
 
+Components use the light `m` elements under `LazyMotion` (`MotionProvider`). The animation,
+gesture and layout features load as a separate chunk after hydration (`features.ts`), which
+keeps about 19 kB of compressed JavaScript out of the first load. `strict` mode makes a stray
+`motion.*` element fail loudly.
+
 - `Header` hides while scrolling down.
-- `Marquee` moves on `useAnimationFrame`. Scroll velocity speeds it up, and scrolling up
-  reverses it.
+- `Marquee` moves on Motion's frame loop, only while it is on screen. Scroll velocity speeds
+  it up, and scrolling up reverses it.
+- `ProjectGrid` animates the filter with `layout`: the remaining cards glide to their new
+  places and returning ones fade in.
 - `SketchToReality` is a pinned section driven by `useScroll`.
 - `Cursor` and `MaterialSpheres` follow the pointer through springs.
 - `AnimatedNumber` eases the calculator total.

@@ -1,6 +1,7 @@
 'use client'
 
-import { AnimatePresence, motion, useMotionValue, useSpring } from 'motion/react'
+import { AnimatePresence, useMotionValue, useSpring } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useEffect, useState } from 'react'
 
 import { useFinePointer } from '@/lib/use-media-query'
@@ -46,19 +47,19 @@ export function Cursor() {
   if (!enabled) return null
 
   return (
-    <motion.div
+    <m.div
       aria-hidden="true"
       style={{ x, y }}
       className="pointer-events-none fixed top-0 left-0 z-[70]"
     >
-      <motion.span
+      <m.span
         animate={{ scale: label ? 0 : active ? 1.6 : 1, opacity: label ? 0 : 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 24 }}
         className="absolute -top-4.5 -left-4.5 size-9 rounded-full border border-ink/50"
       />
       <AnimatePresence>
         {label && (
-          <motion.span
+          <m.span
             key="label"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -67,9 +68,9 @@ export function Cursor() {
             className="absolute -top-12 -left-12 grid size-24 place-items-center rounded-full bg-accent-600 text-xs font-semibold tracking-wide text-white uppercase"
           >
             {label}
-          </motion.span>
+          </m.span>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   )
 }

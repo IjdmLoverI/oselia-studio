@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useMotionValueEvent, useScroll } from 'motion/react'
+import { useMotionValueEvent, useScroll } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
@@ -28,7 +29,7 @@ export function Header() {
   })
 
   return (
-    <motion.header
+    <m.header
       animate={{ y: hidden ? '-100%' : '0%' }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
@@ -66,6 +67,6 @@ export function Header() {
           <MobileMenu />
         </div>
       </Container>
-    </motion.header>
+    </m.header>
   )
 }
