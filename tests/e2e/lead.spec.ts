@@ -53,10 +53,13 @@ test('a form sent faster than a person could type is refused', async ({ page }) 
   await page.goto('/uk')
 
   const contact = page.locator('#contact')
-  await contact.getByLabel('Ім’я').fill('Швидкий бот')
-  await contact.getByLabel('Телефон', { exact: true }).fill('067 123 45 67')
-  await contact.getByText('Погоджуюся на обробку персональних даних').click()
-  await contact.getByRole('button', { name: 'Надіслати заявку' }).click()
-
-  await expect(contact.getByRole('alert')).toContainText('занадто швидко', serverAction)
+  await expect(async () => {
+    await contact.locator('form').evaluate((form: HTMLFormElement) => {
+      form.querySelector<HTMLInputElement>('[name="name"]')!.value = 'Швидкий бот'
+      form.querySelector<HTMLInputElement>('[name="phone"]')!.value = '067 123 45 67'
+      form.querySelector<HTMLInputElement>('[name="consent"]')!.checked = true
+      form.requestSubmit()
+    })
+    await expect(contact.getByRole('alert')).toContainText('занадто швидко', { timeout: 3000 })
+  }).toPass(serverAction)
 })

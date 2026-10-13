@@ -22,8 +22,8 @@ const RATE_LIMIT = 3
 export async function submitLead(_previous: LeadState, formData: FormData): Promise<LeadState> {
   if (formData.get('company')) return { status: 'success' }
 
-  const startedAt = Number(formData.get('startedAt'))
-  if (!startedAt || Date.now() - startedAt < MIN_FILL_TIME) {
+  const fillTime = Number(formData.get('fillTime'))
+  if (!(fillTime >= MIN_FILL_TIME)) {
     return { status: 'error', reason: 'tooFast' }
   }
 
