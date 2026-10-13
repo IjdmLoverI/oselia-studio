@@ -88,7 +88,7 @@ export function Hero({ stats }: { stats: HeroStat[] }) {
         </div>
 
         <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-          <div className="intro-arch relative aspect-[4/5] overflow-hidden rounded-t-[14rem] rounded-b-[2rem] shadow-card">
+          <div className="intro-arch relative aspect-[4/5] overflow-hidden rounded-t-[14rem] rounded-b-[2rem] shadow-card after:absolute after:inset-0 after:bg-sand-100">
             <div className="intro-zoom absolute inset-0">
               <Image
                 src={heroImage}

@@ -30,6 +30,21 @@
   --intro-delay: 0.1s;
 }
 
+@media (max-width: 767px) {
+  :root:not([data-intro='seen']) {
+    --intro-delay: 0s;
+  }
+
+  .preloader {
+    display: none;
+  }
+
+  .intro .reveal-word {
+    animation-duration: 0.8s;
+    animation-delay: calc(var(--intro-delay) + var(--i, 0) * 40ms);
+  }
+}
+
 :root[data-mood='olive'] {
   --color-accent-500: #7a7f3c;
   --color-accent-600: #5f6630;
@@ -93,8 +108,8 @@
     animation-delay: calc(var(--intro-delay) + var(--d, 0ms));
   }
 
-  .intro-arch {
-    animation: arch-in 1.4s var(--ease-out-expo) both;
+  .intro-arch::after {
+    animation: curtain-up 1.4s var(--ease-out-expo) both;
     animation-delay: calc(var(--intro-delay) - 0.2s);
   }
 
@@ -247,12 +262,9 @@
   }
 }
 
-@keyframes arch-in {
-  from {
-    clip-path: inset(100% 0 0 0);
-  }
+@keyframes curtain-up {
   to {
-    clip-path: inset(0 0 0 0);
+    transform: translateY(-101%);
   }
 }
 
@@ -318,7 +330,8 @@
     display: none;
   }
 
-  .preloader {
+  .preloader,
+  .intro-arch::after {
     display: none;
   }
 

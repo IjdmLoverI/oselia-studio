@@ -3,10 +3,16 @@
 import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'motion/react'
 import { useEffect, type CSSProperties } from 'react'
 
+import linen from '@/assets/materials/linen.webp'
+import oak from '@/assets/materials/oak.webp'
+import stone from '@/assets/materials/stone.webp'
+import terracotta from '@/assets/materials/terracotta.webp'
 import { useFinePointer } from '@/lib/use-media-query'
 import { cn } from '@/lib/utils'
 
-import { materialTexture, type Material } from './materials'
+const textures = { stone, oak, terracotta, linen }
+
+export type Material = keyof typeof textures
 
 type Sphere = {
   material: Material
@@ -107,7 +113,7 @@ function SphereItem({
             style={{
               width: sphere.size,
               height: sphere.size,
-              backgroundImage: materialTexture[sphere.material],
+              backgroundImage: `url(${textures[sphere.material].src})`,
               backgroundSize: 'cover',
             }}
           />

@@ -3,16 +3,16 @@
 import Lenis from 'lenis'
 import { useEffect } from 'react'
 
-import { useMediaQuery } from '@/lib/use-media-query'
+import { useFinePointer } from '@/lib/use-media-query'
 
 export function SmoothScroll() {
-  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+  const enabled = useFinePointer()
 
   useEffect(() => {
-    if (reducedMotion) return
+    if (!enabled) return
     const lenis = new Lenis({ autoRaf: true, lerp: 0.1, anchors: { offset: -88 } })
     return () => lenis.destroy()
-  }, [reducedMotion])
+  }, [enabled])
 
   return null
 }
