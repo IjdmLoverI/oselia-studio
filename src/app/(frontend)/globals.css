@@ -1,0 +1,47 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-unbounded), var(--font-manrope), ui-sans-serif, sans-serif;
+
+  --color-sand-50: #faf7f2;
+  --color-sand-100: #f4efe8;
+  --color-sand-200: #e9e0d4;
+  --color-sand-300: #d8cbb9;
+  --color-ink: #1d1d1b;
+  --color-ink-soft: #2a2926;
+  --color-muted: #5f5a52;
+  --color-accent-500: #c4622d;
+  --color-accent-600: #b4531f;
+  --color-accent-700: #9a4518;
+
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(29 29 27 / 0.04), 0 12px 32px -12px rgb(29 29 27 / 0.18);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-sand-50 font-sans text-ink antialiased;
+  }
+
+  ::selection {
+    @apply bg-accent-500 text-white;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-600);
+    outline-offset: 3px;
+  }
+}

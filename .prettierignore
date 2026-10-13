@@ -1,0 +1,8 @@
+.next
+node_modules
+package-lock.json
+src/payload-types.ts
+src/migrations
+src/app/(payload)
+playwright-report
+test-results
