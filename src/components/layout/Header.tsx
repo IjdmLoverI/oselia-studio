@@ -1,9 +1,10 @@
 'use client'
 
+import { motion, useMotionValueEvent, useScroll } from 'motion/react'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { ButtonLink } from '@/components/ui/Button'
+import { buttonStyles } from '@/components/ui/Button'
 import { Container } from '@/components/ui/Container'
 import { Link } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
@@ -12,20 +13,24 @@ import { LocaleSwitcher } from './LocaleSwitcher'
 import { Logo } from './Logo'
 import { MobileMenu } from './MobileMenu'
 import { sections } from './navigation'
+import { SectionLink } from './SectionLink'
 
 export function Header() {
   const t = useTranslations()
+  const { scrollY } = useScroll()
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  useMotionValueEvent(scrollY, 'change', (current) => {
+    const previous = scrollY.getPrevious() ?? 0
+    setScrolled(current > 24)
+    setHidden(current > previous && current > 240)
+  })
 
   return (
-    <header
+    <motion.header
+      animate={{ y: hidden ? '-100%' : '0%' }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         'fixed inset-x-0 top-0 z-40 transition-[background-color,box-shadow,backdrop-filter] duration-300',
         scrolled
@@ -33,7 +38,7 @@ export function Header() {
           : 'bg-transparent',
       )}
     >
-      <Container className="flex h-18 items-center justify-between gap-6">
+      <Container className="intro-fade flex h-18 items-center justify-between gap-6">
         <Link href="/" aria-label={t('common.home')} className="rounded-md">
           <Logo />
         </Link>
@@ -42,12 +47,12 @@ export function Header() {
           <ul className="flex items-center gap-7 text-sm font-medium">
             {sections.map((section) => (
               <li key={section}>
-                <Link
-                  href={{ pathname: '/', hash: section }}
-                  className="text-ink/75 transition-colors hover:text-ink"
+                <SectionLink
+                  section={section}
+                  className="relative text-ink/75 transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-right after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink hover:after:origin-left hover:after:scale-x-100"
                 >
                   {t(`nav.${section}`)}
-                </Link>
+                </SectionLink>
               </li>
             ))}
           </ul>
@@ -55,12 +60,12 @@ export function Header() {
 
         <div className="flex items-center gap-3">
           <LocaleSwitcher className="hidden sm:flex" />
-          <ButtonLink href={{ pathname: '/', hash: 'pricing' }} className="hidden md:inline-flex">
+          <SectionLink section="pricing" className={cn(buttonStyles(), 'hidden md:inline-flex')}>
             {t('nav.cta')}
-          </ButtonLink>
+          </SectionLink>
           <MobileMenu />
         </div>
       </Container>
-    </header>
+    </motion.header>
   )
 }

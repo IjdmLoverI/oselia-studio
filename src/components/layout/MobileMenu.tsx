@@ -4,12 +4,13 @@ import { Menu, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRef } from 'react'
 
-import { ButtonLink } from '@/components/ui/Button'
-import { Link } from '@/i18n/navigation'
+import { buttonStyles } from '@/components/ui/Button'
+import { cn } from '@/lib/utils'
 
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { Logo } from './Logo'
 import { sections } from './navigation'
+import { SectionLink } from './SectionLink'
 
 export function MobileMenu() {
   const t = useTranslations()
@@ -53,13 +54,13 @@ export function MobileMenu() {
             <ul>
               {sections.map((section) => (
                 <li key={section}>
-                  <Link
-                    href={{ pathname: '/', hash: section }}
+                  <SectionLink
+                    section={section}
                     onClick={close}
                     className="block py-3 font-display text-2xl"
                   >
                     {t(`nav.${section}`)}
-                  </Link>
+                  </SectionLink>
                 </li>
               ))}
             </ul>
@@ -67,14 +68,13 @@ export function MobileMenu() {
 
           <div className="mt-auto space-y-5">
             <LocaleSwitcher />
-            <ButtonLink
-              href={{ pathname: '/', hash: 'pricing' }}
+            <SectionLink
+              section="pricing"
               onClick={close}
-              size="lg"
-              className="w-full"
+              className={cn(buttonStyles({ size: 'lg' }), 'w-full')}
             >
               {t('nav.cta')}
-            </ButtonLink>
+            </SectionLink>
           </div>
         </div>
       </dialog>

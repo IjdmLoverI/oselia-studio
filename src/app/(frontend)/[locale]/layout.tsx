@@ -4,11 +4,17 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
 import { Header } from '@/components/layout/Header'
+import { MoodSwitcher } from '@/components/layout/MoodSwitcher'
+import { Preloader } from '@/components/layout/Preloader'
+import { Cursor } from '@/components/motion/Cursor'
+import { SmoothScroll } from '@/components/motion/SmoothScroll'
 import { env } from '@/env'
 import { resolveLocale } from '@/i18n/locale'
 import { routing } from '@/i18n/routing'
 
 import '../globals.css'
+
+const bootScript = `try{var r=document.documentElement;r.classList.add('js');if(sessionStorage.getItem('oselia-intro'))r.dataset.intro='seen';else sessionStorage.setItem('oselia-intro','1');var m=localStorage.getItem('oselia-mood');if(m&&m!=='terracotta')r.dataset.mood=m}catch(e){}`
 
 const manrope = Manrope({
   subsets: ['latin', 'cyrillic'],
@@ -43,8 +49,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
   const t = await getTranslations({ locale, namespace: 'common' })
 
   return (
-    <html lang={locale} className={`${manrope.variable} ${unbounded.variable}`}>
+    <html
+      lang={locale}
+      className={`${manrope.variable} ${unbounded.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
+      </head>
       <body>
+        <Preloader />
         <NextIntlClientProvider>
           <a
             href="#content"
@@ -54,6 +68,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
           </a>
           <Header />
           <main id="content">{children}</main>
+          <MoodSwitcher />
+          <Cursor />
+          <SmoothScroll />
         </NextIntlClientProvider>
       </body>
     </html>
