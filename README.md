@@ -73,7 +73,7 @@ accessibility at 100.
 | Motion    | Motion for React, Lenis, CSS animations                         |
 | Forms     | Server actions, zod                                             |
 | Testing   | Vitest, Playwright, axe-core                                    |
-| Tooling   | ESLint, Prettier, husky, lint-staged, Dependabot                |
+| Tooling   | ESLint, Prettier, husky, lint-staged                            |
 | Hosting   | Vercel, Neon Postgres, Vercel Blob                              |
 
 ## Quick start
