@@ -73,6 +73,7 @@ export async function* reply(turn: Turn): AsyncGenerator<string> {
   const userMessage: StoredMessage = { role: 'user', text: turn.text, at: now.toISOString() }
 
   const tools = createTools({
+    locale: turn.locale,
     now: () => new Date(),
     rates,
     schedule: settings.schedule,
@@ -84,6 +85,7 @@ export async function* reply(turn: Turn): AsyncGenerator<string> {
         channel: turn.channel,
         locale: turn.locale,
       }),
+    log: (message) => console.warn(message),
   })
 
   const result = streamText({
@@ -106,6 +108,9 @@ export async function* reply(turn: Turn): AsyncGenerator<string> {
       if (part.type === 'text-delta') {
         answer += part.text
         yield part.text
+      } else if (part.type === 'tool-error') {
+        const reason = part.error instanceof Error ? part.error.name : 'unknown error'
+        console.warn(`Tool ${part.toolName} failed: ${reason}`)
       } else if (part.type === 'error') {
         failure = part.error
         break

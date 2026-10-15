@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest'
 import {
   fromStudioTime,
   groupSlots,
+  labelDay,
+  normalizeSlot,
   isSlotOpen,
   listSlots,
   toStudioTime,
@@ -97,5 +99,18 @@ describe('groupSlots', () => {
       { date: '2026-10-16', weekday: 'fri', times: ['10:00', '12:00'] },
       { date: '2026-10-19', weekday: 'mon', times: ['10:00'] },
     ])
+  })
+})
+
+describe('labels and input', () => {
+  it('names days in both languages', () => {
+    expect(labelDay('2026-10-16', 'uk')).toBe('пт, 16 жовтня')
+    expect(labelDay('2026-10-16', 'en')).toBe('Fri 16 October')
+  })
+
+  it('reads slots written in common ways', () => {
+    expect(normalizeSlot('2026-10-16T10:00')).toBe('2026-10-16T10:00')
+    expect(normalizeSlot('2026-10-16 9:00')).toBe('2026-10-16T09:00')
+    expect(normalizeSlot('2026-10-16T10:00:00+03:00')).toBe('2026-10-16T10:00')
   })
 })
