@@ -29,10 +29,21 @@ export const Conversations: CollectionConfig = {
       admin: { readOnly: true },
     },
     {
+      name: 'transcript',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/components/admin/ConversationTranscript#ConversationTranscript' },
+      },
+    },
+    {
       name: 'messages',
       type: 'array',
       label: { uk: 'Повідомлення', en: 'Messages' },
-      admin: { readOnly: true, initCollapsed: false },
+      labels: {
+        singular: { uk: 'Повідомлення', en: 'Message' },
+        plural: { uk: 'Повідомлення', en: 'Messages' },
+      },
+      admin: { readOnly: true, initCollapsed: true },
       fields: [
         {
           type: 'row',

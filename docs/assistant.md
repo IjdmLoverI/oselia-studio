@@ -87,8 +87,8 @@ blocks both the 10:00 and the 12:00 slot.
 When the greeting or the visit description is empty, for example on a fresh database that
 was never seeded, the assistant uses the texts in `src/lib/assistant/defaults.ts`.
 
-**Assistant → Conversations** shows every chat with its channel, the visit it produced and the
-tokens it used. **Sales → Site visits** lists the bookings; a visit can also be added there by
+**Assistant → Conversations** shows every chat as message bubbles with times, along with its
+channel, the visit it produced and the tokens it used. **Sales → Site visits** lists the bookings; a visit can also be added there by
 hand, for example after a phone call.
 
 ## Model provider
