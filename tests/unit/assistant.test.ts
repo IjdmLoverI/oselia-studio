@@ -189,6 +189,17 @@ describe('book_visit', () => {
     expect(pending()).toBeNull()
   })
 
+  it('treats null optional fields as missing', async () => {
+    const { actions, later, created } = setup()
+    const withNulls = { ...visitor, renovationType: null, area: null, notes: null }
+    expect(await actions.book(withNulls)).toEqual(held)
+    expect(await later.book(withNulls)).toMatchObject({ ok: true })
+    expect(created[0]).not.toHaveProperty('area', null)
+    expect(actions.estimate({ area: 50, type: 'cosmetic', extras: null })).toMatchObject({
+      unknownExtras: [],
+    })
+  })
+
   it('reads back the renovation type and area as words', async () => {
     const { actions } = setup()
     expect(await actions.book({ ...visitor, renovationType: 'capital', area: 60 })).toMatchObject({

@@ -63,14 +63,14 @@ export const describeSlot = (slot: string, locale: Locale) =>
 const estimateInput = z.object({
   area: z.number().positive().max(5000).describe('Area in square metres'),
   type: z.enum(renovationTypes),
-  extras: z.array(z.string()).max(10).optional().describe('Keys from the extras list'),
+  extras: z.array(z.string()).max(10).nullish().describe('Keys from the extras list'),
 })
 
 const slotsInput = z.object({
   date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional()
+    .nullish()
     .describe('Day to check, YYYY-MM-DD'),
 })
 
@@ -79,14 +79,15 @@ const bookingInput = z.object({
   name: z.string(),
   phone: z.string(),
   address: z.string().describe('Address or district'),
-  renovationType: z.enum(renovationTypes).optional(),
-  area: z.number().positive().max(5000).optional(),
-  notes: z.string().max(500).optional(),
+  renovationType: z.enum(renovationTypes).nullish(),
+  area: z.number().positive().max(5000).nullish(),
+  notes: z.string().max(500).nullish(),
 })
 
 export function createActions(deps: ToolDeps) {
   return {
-    estimate({ area, type, extras = [] }: z.infer<typeof estimateInput>) {
+    estimate({ area, type, extras }: z.infer<typeof estimateInput>) {
+      extras ??= []
       const known = new Set(deps.rates.extras.map((extra) => extra.key))
       const { min, max } = estimatePrice({ area, type, extras }, deps.rates)
       return {
@@ -149,8 +150,8 @@ export function createActions(deps: ToolDeps) {
         name,
         phone,
         address,
-        renovationType: input.renovationType,
-        area: input.area,
+        renovationType: input.renovationType ?? undefined,
+        area: input.area ?? undefined,
         notes: input.notes?.trim() || undefined,
       }
       const visit = {
