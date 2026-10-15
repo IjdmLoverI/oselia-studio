@@ -128,3 +128,24 @@ test.describe('chat endpoint', () => {
     expect(response.status()).toBe(400)
   })
 })
+
+test.describe('Telegram webhook', () => {
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET
+  test.skip(!secret, 'needs TELEGRAM_WEBHOOK_SECRET')
+
+  test('rejects a request without the secret header', async ({ request }) => {
+    const response = await request.post('/api/assistant/telegram', {
+      headers: { 'X-Telegram-Bot-Api-Secret-Token': 'wrong' },
+      data: { update_id: 1 },
+    })
+    expect(response.status()).toBe(401)
+  })
+
+  test('acknowledges updates it does not answer', async ({ request }) => {
+    const response = await request.post('/api/assistant/telegram', {
+      headers: { 'X-Telegram-Bot-Api-Secret-Token': secret! },
+      data: { update_id: 2, edited_message: { text: 'hi' } },
+    })
+    expect(response.status()).toBe(200)
+  })
+})

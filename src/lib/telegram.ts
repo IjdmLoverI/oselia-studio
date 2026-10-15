@@ -73,18 +73,22 @@ export function formatBookingMessage(booking: BookingNotice) {
   return lines.join('\n')
 }
 
+export async function callTelegram(token: string, method: string, body: Record<string, unknown>) {
+  const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10000),
+  })
+  if (!response.ok) throw new Error(`Telegram ${method} responded with ${response.status}`)
+  return response.json() as Promise<{ ok: boolean; result?: unknown; description?: string }>
+}
+
 export async function sendToTelegram(
   text: string,
   { token, chatId }: { token?: string; chatId?: string },
 ) {
   if (!token || !chatId) return false
-
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
-    signal: AbortSignal.timeout(5000),
-  })
-  if (!response.ok) throw new Error(`Telegram responded with ${response.status}`)
+  await callTelegram(token, 'sendMessage', { chat_id: chatId, text, parse_mode: 'HTML' })
   return true
 }
