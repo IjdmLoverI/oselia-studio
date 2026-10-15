@@ -8,6 +8,8 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { Bookings } from './collections/Bookings'
+import { Conversations } from './collections/Conversations'
 import { Faqs } from './collections/Faqs'
 import { Leads } from './collections/Leads'
 import { Media } from './collections/Media'
@@ -16,6 +18,7 @@ import { Services } from './collections/Services'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { env } from './env'
+import { AssistantSettings } from './globals/AssistantSettings'
 import { Pricing } from './globals/Pricing'
 import { SiteSettings } from './globals/SiteSettings'
 
@@ -45,8 +48,18 @@ export default buildConfig({
     defaultLocale: 'uk',
     fallback: true,
   },
-  collections: [Projects, Services, Testimonials, Faqs, Media, Leads, Users],
-  globals: [SiteSettings, Pricing],
+  collections: [
+    Projects,
+    Services,
+    Testimonials,
+    Faqs,
+    Media,
+    Leads,
+    Bookings,
+    Conversations,
+    Users,
+  ],
+  globals: [SiteSettings, Pricing, AssistantSettings],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
   typescript: {
