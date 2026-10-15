@@ -22,11 +22,13 @@ import {
   loadKnowledge,
   loadSettings,
   openConversation,
+  readPending,
   recentConversations,
   takenVisits,
+  writePending,
   type ConversationKey,
 } from './store'
-import { createTools } from './tools'
+import { createTools, describeSlot } from './tools'
 
 export type Turn = ConversationKey & { locale: Locale; text: string; ipHash?: string }
 
@@ -72,13 +74,27 @@ export async function* reply(turn: Turn): AsyncGenerator<string> {
   const history = (conversation.messages ?? []) as StoredMessage[]
   const userMessage: StoredMessage = { role: 'user', text: turn.text, at: now.toISOString() }
 
+  const [booked, pending] = await Promise.all([
+    activeBooking(conversation.id),
+    readPending(conversation.id),
+  ])
+  const state = {
+    booked: booked ? describeSlot(booked, turn.locale) : undefined,
+    pending: pending
+      ? `${describeSlot(pending.slot, turn.locale)}; ${pending.name}, ${pending.phone}, ${pending.address}`
+      : undefined,
+  }
+
   const tools = createTools({
     locale: turn.locale,
+    turn: userMessage.at,
     now: () => new Date(),
     rates,
     schedule: settings.schedule,
     takenVisits: () => takenVisits(new Date(Date.now() - settings.schedule.slotMinutes * 60_000)),
     existingBooking: () => activeBooking(conversation.id),
+    pendingBooking: () => readPending(conversation.id),
+    savePending: (next) => writePending(conversation.id, next),
     createBooking: (request) =>
       createBooking(request, {
         conversationId: conversation.id,
@@ -91,7 +107,7 @@ export async function* reply(turn: Turn): AsyncGenerator<string> {
   const result = streamText({
     model: configured.model,
     providerOptions: configured.providerOptions,
-    instructions: buildInstructions(knowledge, { locale: turn.locale, now }),
+    instructions: buildInstructions(knowledge, { locale: turn.locale, now, state }),
     messages: [...recentHistory(history), { role: 'user', content: turn.text }],
     tools,
     stopWhen: stepCountIs(MAX_STEPS),

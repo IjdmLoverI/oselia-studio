@@ -113,6 +113,11 @@ export const Conversations: CollectionConfig = {
       admin: { position: 'sidebar', readOnly: true },
     },
     {
+      name: 'pendingBooking',
+      type: 'json',
+      admin: { hidden: true },
+    },
+    {
       name: 'ipHash',
       type: 'text',
       index: true,

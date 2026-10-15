@@ -11,7 +11,12 @@ import {
 import { buildInstructions, type Knowledge } from '@/lib/assistant/prompt'
 import { cannedReply } from '@/lib/assistant/replies'
 import type { Schedule } from '@/lib/assistant/slots'
-import { createActions, type BookingRequest, type ToolDeps } from '@/lib/assistant/tools'
+import {
+  createActions,
+  type BookingRequest,
+  type PendingBooking,
+  type ToolDeps,
+} from '@/lib/assistant/tools'
 import { formatBookingMessage } from '@/lib/telegram'
 
 const knowledge: Knowledge = {
@@ -49,6 +54,17 @@ describe('buildInstructions', () => {
     expect(text).toContain('Site visit: The visit is free.')
   })
 
+  it('tells the model about a booked or a held visit', () => {
+    const text = buildInstructions(knowledge, {
+      locale: 'en',
+      now,
+      state: { booked: 'Fri 16 October, 10:00', pending: 'Mon 19 October, 12:00; Olena' },
+    })
+    expect(text).toContain('already has a site visit booked: Fri 16 October, 10:00')
+    expect(text).toContain('Waiting for the visitor to confirm this visit: Mon 19 October, 12:00')
+    expect(buildInstructions(knowledge, { locale: 'en', now })).not.toContain('Waiting for')
+  })
+
   it('sets the default reply language from the site locale', () => {
     expect(buildInstructions(knowledge, { locale: 'uk', now })).toContain('Ukrainian by default')
     expect(buildInstructions(knowledge, { locale: 'en', now })).toContain('English by default')
@@ -66,23 +82,35 @@ const schedule: Schedule = {
 
 function setup(overrides: Partial<ToolDeps> = {}) {
   const created: BookingRequest[] = []
-  const actions = createActions({
-    locale: 'uk',
-    now: () => now,
-    rates: {
-      types: [{ key: 'cosmetic', pricePerSqm: 4500 }],
-      extras: [{ key: 'design', price: 900, perSqm: true }],
-    },
-    schedule,
-    takenVisits: async () => [],
-    existingBooking: async () => null,
-    createBooking: async (request) => {
-      created.push(request)
-      return 'created'
-    },
-    ...overrides,
-  })
-  return { actions, created }
+  let pending: PendingBooking | null = null
+  const actionsFor = (turn: string) =>
+    createActions({
+      locale: 'uk',
+      turn,
+      now: () => now,
+      rates: {
+        types: [{ key: 'cosmetic', pricePerSqm: 4500 }],
+        extras: [{ key: 'design', price: 900, perSqm: true }],
+      },
+      schedule,
+      takenVisits: async () => [],
+      existingBooking: async () => null,
+      pendingBooking: async () => pending,
+      savePending: async (next) => {
+        pending = next
+      },
+      createBooking: async (request) => {
+        created.push(request)
+        return 'created'
+      },
+      ...overrides,
+    })
+  return {
+    actions: actionsFor('first message'),
+    later: actionsFor('next message'),
+    created,
+    pending: () => pending,
+  }
 }
 
 const visitor = {
@@ -129,23 +157,48 @@ describe('find_slots', () => {
 })
 
 describe('book_visit', () => {
-  it('books a free slot with a normalised phone', async () => {
-    const { actions, created } = setup()
-    const result = await actions.book(visitor)
+  const held = {
+    ok: false,
+    status: 'needs_confirmation',
+    visit: {
+      when: 'пт, 16 жовтня, 10:00',
+      name: 'Olena',
+      phone: '+380671234567',
+      address: 'Obolon',
+    },
+    next: expect.any(String),
+  }
 
-    expect(result).toEqual({ ok: true, slot: '2026-10-16T10:00' })
+  it('holds the visit until the visitor confirms in a later message', async () => {
+    const { actions, later, created, pending } = setup()
+
+    expect(await actions.book(visitor)).toEqual(held)
+    expect(await actions.book(visitor)).toEqual(held)
+    expect(created).toHaveLength(0)
+
+    expect(await later.book(visitor)).toEqual({ ok: true, visit: held.visit })
     expect(created[0]).toMatchObject({
       phone: '+380671234567',
       visitAt: new Date('2026-10-16T07:00:00Z'),
     })
+    expect(pending()).toBeNull()
+  })
+
+  it('asks again when the details change before the booking', async () => {
+    const { actions, later, created } = setup()
+    await actions.book(visitor)
+
+    expect(await later.book({ ...visitor, slot: '2026-10-16T12:00' })).toMatchObject({
+      status: 'needs_confirmation',
+      visit: { when: 'пт, 16 жовтня, 12:00' },
+    })
+    expect(created).toHaveLength(0)
   })
 
   it('accepts a slot written with a space or seconds', async () => {
-    const { actions, created } = setup()
-    expect(await actions.book({ ...visitor, slot: '2026-10-16 10:00:00' })).toEqual({
-      ok: true,
-      slot: '2026-10-16T10:00',
-    })
+    const { actions, later, created } = setup()
+    expect(await actions.book({ ...visitor, slot: '2026-10-16 10:00:00' })).toEqual(held)
+    expect(await later.book(visitor)).toMatchObject({ ok: true })
     expect(created).toHaveLength(1)
   })
 
@@ -168,23 +221,21 @@ describe('book_visit', () => {
     })
     expect(
       await setup({ existingBooking: async () => '2026-10-19T10:00' }).actions.book(visitor),
-    ).toEqual({ ok: false, error: 'already_booked', slot: '2026-10-19T10:00' })
+    ).toEqual({ ok: false, error: 'already_booked', visit: 'пн, 19 жовтня, 10:00' })
   })
 
   it('refuses a slot that was taken since it was offered', async () => {
     const { actions, created } = setup({
       takenVisits: async () => [new Date('2026-10-16T07:00:00Z')],
     })
-    expect(await actions.book(visitor)).toEqual({
-      ok: false,
-      error: 'slot_unavailable',
-    })
+    expect(await actions.book(visitor)).toEqual({ ok: false, error: 'slot_unavailable' })
     expect(created).toHaveLength(0)
   })
 
   it('reports a slot lost to a parallel booking', async () => {
-    const { actions } = setup({ createBooking: async () => 'taken' })
-    expect(await actions.book(visitor)).toEqual({ ok: false, error: 'slot_taken_meanwhile' })
+    const { actions, later } = setup({ createBooking: async () => 'taken' })
+    await actions.book(visitor)
+    expect(await later.book(visitor)).toEqual({ ok: false, error: 'slot_taken_meanwhile' })
   })
 })
 

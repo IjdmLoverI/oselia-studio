@@ -342,6 +342,15 @@ export interface Conversation {
   booking?: (number | null) | Booking;
   lastMessageAt?: string | null;
   tokens?: number | null;
+  pendingBooking?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   ipHash?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -657,6 +666,7 @@ export interface ConversationsSelect<T extends boolean = true> {
   booking?: T;
   lastMessageAt?: T;
   tokens?: T;
+  pendingBooking?: T;
   ipHash?: T;
   updatedAt?: T;
   createdAt?: T;
