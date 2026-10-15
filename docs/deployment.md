@@ -131,6 +131,3 @@ sidestepped.
 
 Vercel's Git integration deploys independently. To make production wait for CI, turn on
 branch protection for `main` with the CI checks required, and merge through pull requests.
-
-Dependabot opens weekly grouped updates: Payload packages together, Next and React together,
-and the remaining minor and patch updates in one pull request.
