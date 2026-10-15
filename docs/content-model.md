@@ -110,7 +110,12 @@ The shared access functions live in `src/access.ts`.
 2. Run `npm run generate:types` and `npm run migrate:create <name>`.
 3. Review the generated migration in `src/migrations` and commit it together with the schema
    change.
-4. Deployments apply pending migrations before the build. See [deployment](deployment.md).
+4. Run `npm run migrate` locally. Deployments apply pending migrations before the build. See
+   [deployment](deployment.md).
 
-In development Payload can also push schema changes straight to the database. The project
-keeps migrations as the source of truth, so production never depends on that.
+Payload's development "push" mode is turned off (`push: false`), so every database, local ones
+included, gets its schema only from migrations. A push would also leave a `dev` marker that
+makes later `payload migrate` runs stop and ask for confirmation.
+
+The storage adapter runs with `alwaysInsertFields`. Its fields (`prefix`, `_objectKey`) then
+exist whether or not Vercel Blob is configured, and local and production schemas match.

@@ -35,8 +35,11 @@ Short notes on the main choices and what they cost.
 **Migrations**
 
 - Migrations are generated and committed, and the production build applies them.
-- In development Payload can push schema changes directly. Production never relies on that,
-  so a deploy always knows exactly which schema it expects.
+- Payload's development push mode is off, so local databases follow the same migrations as
+  production and a deploy always knows exactly which schema it expects.
+- The Vercel Blob adapter inserts its fields even when it is disabled (`alwaysInsertFields`).
+  Without that, the first production build failed: the migration had been generated locally
+  without Blob, so the `_objectKey` column was missing.
 
 ## next-intl for interface text
 

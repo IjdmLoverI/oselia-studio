@@ -55,10 +55,12 @@ export default buildConfig({
   db: postgresAdapter({
     pool: { connectionString: env.DATABASE_URL },
     migrationDir: path.resolve(dirname, 'migrations'),
+    push: false,
   }),
   plugins: [
     vercelBlobStorage({
       enabled: Boolean(env.BLOB_READ_WRITE_TOKEN),
+      alwaysInsertFields: true,
       collections: { media: { disablePayloadAccessControl: true } },
       token: env.BLOB_READ_WRITE_TOKEN,
     }),
