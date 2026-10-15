@@ -1,6 +1,6 @@
 import type { Locale } from '@/i18n/routing'
 
-export type CannedReply = 'unavailable' | 'busy' | 'slowDown' | 'tooLong' | 'failed'
+export type CannedReply = 'unavailable' | 'busy' | 'slowDown' | 'tooLong' | 'failed' | 'textOnly'
 
 const replies: Record<Locale, Record<CannedReply, string>> = {
   uk: {
@@ -9,7 +9,8 @@ const replies: Record<Locale, Record<CannedReply, string>> = {
     busy: 'Зараз дуже багато звернень, і я не встигаю відповісти. Спробуйте за хвилину або залиште заявку у формі на сайті.',
     slowDown: 'Ви пишете дуже часто. Зробіть, будь ласка, паузу на кілька хвилин.',
     tooLong: 'Повідомлення задовге. Напишіть, будь ласка, коротше, до 600 символів.',
-    failed: 'Не вдалося відповісти. Спробуйте ще раз або залиште заявку у формі на сайті: {phone}.',
+    failed: 'Не вдалося відповісти. Спробуйте ще раз або зателефонуйте нам: {phone}.',
+    textOnly: 'Поки що я розумію лише текстові повідомлення. Напишіть, будь ласка, словами.',
   },
   en: {
     unavailable:
@@ -17,7 +18,8 @@ const replies: Record<Locale, Record<CannedReply, string>> = {
     busy: 'There are too many requests right now and I cannot keep up. Try again in a minute or leave a request in the form on the site.',
     slowDown: 'You are writing very often. Please take a break for a few minutes.',
     tooLong: 'The message is too long. Please keep it under 600 characters.',
-    failed: 'I could not reply. Try again or leave a request in the form on the site: {phone}.',
+    failed: 'I could not reply. Try again or call us: {phone}.',
+    textOnly: 'For now I only understand text messages. Please write your question in words.',
   },
 }
 
