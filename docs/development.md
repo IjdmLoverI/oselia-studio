@@ -49,6 +49,13 @@ Everything is in both languages. The script upserts by slug or file name, so run
 refreshes the demo content instead of duplicating it. The texts live in
 `scripts/seed/content.ts`, and the images in `scripts/seed/media`.
 
+When uploads go to Vercel Blob, the seed also checks that every stored image still exists. A
+media record whose file is missing gets its file uploaded again under the same name.
+
+Every Local API call gets its own `context` object. The storage plugin keeps per-request upload
+state in `req.context`. A shared object would carry the first image's state into every later
+upload, and only the first file would reach Blob.
+
 Each project's sketch image is derived from its cover photo: grayscale, an edge filter, then a
 warm tint over paper colour. Because of that, the slider compares exactly the same view.
 

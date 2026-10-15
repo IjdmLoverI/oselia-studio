@@ -15,7 +15,7 @@ import {
 import { paragraphs } from './seed/lexical'
 
 const mediaDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'seed/media')
-const context = { disableRevalidate: true }
+const seedContext = () => ({ disableRevalidate: true })
 
 async function seedAdmin(payload: Payload) {
   const email = process.env.SEED_ADMIN_EMAIL
@@ -25,8 +25,18 @@ async function seedAdmin(payload: Payload) {
   const existing = await payload.find({ collection: 'users', where: { email: { equals: email } } })
   if (existing.totalDocs > 0) return
 
-  await payload.create({ collection: 'users', data: { email, password, name: 'Admin' }, context })
+  await payload.create({
+    collection: 'users',
+    data: { email, password, name: 'Admin' },
+    context: seedContext(),
+  })
   console.log(`Created admin ${email}`)
+}
+
+async function isStoredFileMissing(url: string | null | undefined) {
+  if (!url?.startsWith('http')) return false
+  const response = await fetch(url, { method: 'HEAD' })
+  return !response.ok
 }
 
 async function seedMedia(payload: Payload) {
@@ -34,6 +44,7 @@ async function seedMedia(payload: Payload) {
 
   for (const image of images) {
     const filename = `${image.file}.webp`
+    const filePath = path.join(mediaDir, filename)
     const found = await payload.find({
       collection: 'media',
       where: { filename: { equals: filename } },
@@ -41,30 +52,43 @@ async function seedMedia(payload: Payload) {
       depth: 0,
     })
     const credit = { author: image.author, url: image.photo }
+    const existing = found.docs[0]
 
     const doc =
-      found.docs[0] ??
+      existing ??
       (await payload.create({
         collection: 'media',
         locale: 'uk',
         data: { alt: image.alt.uk, credit },
-        filePath: path.join(mediaDir, filename),
-        context,
+        filePath,
+        context: seedContext(),
       }))
+
+    if (existing && (await isStoredFileMissing(existing.url))) {
+      await payload.update({
+        collection: 'media',
+        id: existing.id,
+        data: {},
+        filePath,
+        overwriteExistingFiles: true,
+        context: seedContext(),
+      })
+      console.log(`Re-uploaded ${filename}`)
+    }
 
     await payload.update({
       collection: 'media',
       id: doc.id,
       locale: 'uk',
       data: { alt: image.alt.uk, credit },
-      context,
+      context: seedContext(),
     })
     await payload.update({
       collection: 'media',
       id: doc.id,
       locale: 'en',
       data: { alt: image.alt.en },
-      context,
+      context: seedContext(),
     })
     ids.set(image.file, doc.id)
   }
@@ -98,16 +122,16 @@ async function seedServices(payload: Payload, media: Map<string, number>) {
           id: found.docs[0].id,
           locale: 'uk',
           data,
-          context,
+          context: seedContext(),
         })
-      : await payload.create({ collection: 'services', locale: 'uk', data, context })
+      : await payload.create({ collection: 'services', locale: 'uk', data, context: seedContext() })
 
     await payload.update({
       collection: 'services',
       id: doc.id,
       locale: 'en',
       data: { title: service.title.en, summary: service.summary.en },
-      context,
+      context: seedContext(),
     })
     ids.set(service.slug, doc.id)
   }
@@ -156,9 +180,9 @@ async function seedProjects(
           id: found.docs[0].id,
           locale: 'uk',
           data,
-          context,
+          context: seedContext(),
         })
-      : await payload.create({ collection: 'projects', locale: 'uk', data, context })
+      : await payload.create({ collection: 'projects', locale: 'uk', data, context: seedContext() })
 
     await payload.update({
       collection: 'projects',
@@ -171,7 +195,7 @@ async function seedProjects(
         body: paragraphs(project.body.en),
         _status: 'published',
       },
-      context,
+      context: seedContext(),
     })
     ids.set(project.slug, doc.id)
   }
@@ -201,16 +225,21 @@ async function seedTestimonials(payload: Payload, projectIds: Map<string, number
           id: found.docs[0].id,
           locale: 'uk',
           data,
-          context,
+          context: seedContext(),
         })
-      : await payload.create({ collection: 'testimonials', locale: 'uk', data, context })
+      : await payload.create({
+          collection: 'testimonials',
+          locale: 'uk',
+          data,
+          context: seedContext(),
+        })
 
     await payload.update({
       collection: 'testimonials',
       id: doc.id,
       locale: 'en',
       data: { author: testimonial.author.en, text: testimonial.text.en },
-      context,
+      context: seedContext(),
     })
   }
 }
@@ -232,16 +261,16 @@ async function seedFaqs(payload: Payload) {
           id: found.docs[0].id,
           locale: 'uk',
           data,
-          context,
+          context: seedContext(),
         })
-      : await payload.create({ collection: 'faqs', locale: 'uk', data, context })
+      : await payload.create({ collection: 'faqs', locale: 'uk', data, context: seedContext() })
 
     await payload.update({
       collection: 'faqs',
       id: doc.id,
       locale: 'en',
       data: { question: faq.question.en, answer: faq.answer.en },
-      context,
+      context: seedContext(),
     })
   }
 }
@@ -257,13 +286,13 @@ async function seedGlobals(payload: Payload) {
       hours: siteSettings.hours.uk,
       stats: siteSettings.stats,
     },
-    context,
+    context: seedContext(),
   })
   await payload.updateGlobal({
     slug: 'site-settings',
     locale: 'en',
     data: { address: siteSettings.address.en, hours: siteSettings.hours.en },
-    context,
+    context: seedContext(),
   })
 
   const saved = await payload.updateGlobal({
@@ -282,7 +311,7 @@ async function seedGlobals(payload: Payload) {
         label: extra.label.uk,
       })),
     },
-    context,
+    context: seedContext(),
   })
   await payload.updateGlobal({
     slug: 'pricing',
@@ -297,7 +326,7 @@ async function seedGlobals(payload: Payload) {
         label: pricing.extras[index].label.en,
       })),
     },
-    context,
+    context: seedContext(),
   })
 }
 
