@@ -2,6 +2,7 @@ import 'server-only'
 
 import config from '@payload-config'
 import { getPayload, ValidationError, type Where } from 'payload'
+import { z } from 'zod'
 
 import { env } from '@/env'
 import { limitDefaults, scheduleDefaults } from '@/globals/AssistantSettings'
@@ -14,7 +15,7 @@ import { assistantTexts } from './defaults'
 import type { StoredMessage } from './guard'
 import type { Knowledge } from './prompt'
 import { toStudioTime } from './slots'
-import type { BookingRequest } from './tools'
+import type { BookingRequest, PendingBooking } from './tools'
 
 export type Channel = 'web' | 'telegram'
 
@@ -191,6 +192,38 @@ export async function activeBooking(conversationId: number) {
   const booking = conversation.booking
   if (!booking || typeof booking === 'number' || booking.status === 'cancelled') return null
   return toStudioTime(new Date(booking.visitAt))
+}
+
+const pendingSchema = z.object({
+  turn: z.string(),
+  slot: z.string(),
+  name: z.string(),
+  phone: z.string(),
+  address: z.string(),
+  renovationType: z.enum(['cosmetic', 'capital', 'designer']).optional(),
+  area: z.number().optional(),
+  notes: z.string().optional(),
+})
+
+export async function readPending(conversationId: number): Promise<PendingBooking | null> {
+  const payload = await client()
+  const conversation = await payload.findByID({
+    collection: 'conversations',
+    id: conversationId,
+    depth: 0,
+    select: { pendingBooking: true },
+  })
+  const parsed = pendingSchema.safeParse(conversation.pendingBooking)
+  return parsed.success ? parsed.data : null
+}
+
+export async function writePending(conversationId: number, pending: PendingBooking | null) {
+  const payload = await client()
+  await payload.update({
+    collection: 'conversations',
+    id: conversationId,
+    data: { pendingBooking: pending },
+  })
 }
 
 export async function createBooking(

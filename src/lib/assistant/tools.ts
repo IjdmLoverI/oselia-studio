@@ -29,18 +29,29 @@ export type BookingRequest = {
   notes?: string
 }
 
+export type PendingBooking = Omit<BookingRequest, 'visitAt'> & { turn: string }
+
 export type ToolDeps = {
   locale: Locale
+  turn: string
   now: () => Date
   rates: Rates
   schedule: Schedule
   takenVisits: () => Promise<Date[]>
   existingBooking: () => Promise<string | null>
+  pendingBooking: () => Promise<PendingBooking | null>
+  savePending: (pending: PendingBooking | null) => Promise<void>
   createBooking: (request: BookingRequest) => Promise<'created' | 'taken'>
   log?: (message: string) => void
 }
 
 const NEAREST_DAYS = 3
+
+const sameVisit = (a: Omit<PendingBooking, 'turn'>, b: Omit<PendingBooking, 'turn'>) =>
+  a.slot === b.slot && a.name === b.name && a.phone === b.phone && a.address === b.address
+
+export const describeSlot = (slot: string, locale: Locale) =>
+  `${labelDay(slot.slice(0, 10), locale)}, ${slot.slice(11)}`
 
 const estimateInput = z.object({
   area: z.number().positive().max(5000).describe('Area in square metres'),
@@ -112,7 +123,9 @@ export function createActions(deps: ToolDeps) {
       if (!phone) return refuse('invalid_phone')
 
       const existing = await deps.existingBooking()
-      if (existing) return refuse('already_booked', { slot: existing })
+      if (existing) {
+        return refuse('already_booked', { visit: describeSlot(existing, deps.locale) })
+      }
 
       const slot = normalizeSlot(input.slot)
       const visitAt = fromStudioTime(slot)
@@ -123,17 +136,31 @@ export function createActions(deps: ToolDeps) {
       })
       if (!open) return refuse('slot_unavailable')
 
-      const result = await deps.createBooking({
+      const request = {
         slot,
-        visitAt,
         name,
         phone,
         address,
         renovationType: input.renovationType,
         area: input.area,
         notes: input.notes?.trim() || undefined,
-      })
-      return result === 'created' ? { ok: true, slot } : refuse('slot_taken_meanwhile')
+      }
+      const visit = { when: describeSlot(slot, deps.locale), name, phone, address }
+
+      const pending = await deps.pendingBooking()
+      if (!pending || pending.turn === deps.turn || !sameVisit(pending, request)) {
+        await deps.savePending({ ...request, turn: deps.turn })
+        return {
+          ok: false,
+          status: 'needs_confirmation',
+          visit,
+          next: 'Read these details back and ask the visitor to confirm. Call book_visit again with the same details only after they agree.',
+        }
+      }
+
+      const result = await deps.createBooking({ ...request, visitAt })
+      await deps.savePending(null)
+      return result === 'created' ? { ok: true, visit } : refuse('slot_taken_meanwhile')
     },
   }
 }

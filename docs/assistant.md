@@ -43,15 +43,22 @@ counts tokens per minute.
 
 ## Tools
 
-| Tool             | Does                                                                                                                                       |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `estimate_price` | Runs the calculator's `estimatePrice` with the CMS rates. Returns a labour-only range.                                                     |
-| `find_slots`     | Lists free visit times in Kyiv time for the nearest three days, or for a requested date, with each day labelled in the visitor's language. |
-| `book_visit`     | Books a visit. The model is told to call it only after the visitor confirmed the details read back.                                        |
+| Tool             | Does                                                                                                                                                |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `estimate_price` | Runs the calculator's `estimatePrice` with the CMS rates. Returns a labour-only range.                                                              |
+| `find_slots`     | Lists free visit times in Kyiv time for the nearest three days, or for a requested date, with each day labelled in the visitor's language.          |
+| `book_visit`     | Books a visit in two calls: the first holds the details for the visitor to confirm, the second, in a later message with the same details, books it. |
 
-The server does not trust the model's input for a booking. `book_visit` checks the name and
-address length, normalizes the phone like the lead form does, refuses a second booking from the
-same conversation, and recomputes the free slots before saving. The **Site visits** collection
+The server does not trust the model's input for a booking, nor its judgement of when the
+visitor agreed. The first `book_visit` call only stores the details on the conversation and
+returns them to read back. The booking is made only by a call in a later visitor message with
+the same time, name, phone and address, so at least one reply from the visitor sits between the
+two. Each turn the instructions also say whether this visitor already has a visit or one waits
+for confirmation, because tool calls are not kept in the stored history.
+
+`book_visit` also checks the name and address length, normalizes the phone like the lead form
+does, refuses a second booking from the same conversation, and recomputes the free slots before
+saving. The **Site visits** collection
 then guards the time once more: a validator shows a readable error in the admin, and a unique
 `slot` key, cleared when a visit is cancelled, stops two parallel bookings of the same time.
 
