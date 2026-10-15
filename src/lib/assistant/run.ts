@@ -122,8 +122,9 @@ export async function* reply(turn: Turn): AsyncGenerator<string> {
   try {
     for await (const part of result.stream) {
       if (part.type === 'text-delta') {
-        answer += part.text
-        yield part.text
+        const text = part.text.replace(/\u00ad/g, '')
+        answer += text
+        yield text
       } else if (part.type === 'tool-error') {
         const reason = part.error instanceof Error ? part.error.name : 'unknown error'
         console.warn(`Tool ${part.toolName} failed: ${reason}`)

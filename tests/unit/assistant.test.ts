@@ -129,6 +129,7 @@ describe('estimate_price', () => {
       extras: ['design', 'sauna'],
     })
     expect(result).toEqual({
+      renovation: 'косметичний',
       minUAH: 243000,
       maxUAH: 311000,
       labourOnly: true,
@@ -182,6 +183,13 @@ describe('book_visit', () => {
       visitAt: new Date('2026-10-16T07:00:00Z'),
     })
     expect(pending()).toBeNull()
+  })
+
+  it('reads back the renovation type and area as words', async () => {
+    const { actions } = setup()
+    expect(await actions.book({ ...visitor, renovationType: 'capital', area: 60 })).toMatchObject({
+      visit: { renovation: 'капітальний', area: '60 м²' },
+    })
   })
 
   it('asks again when the details change before the booking', async () => {
