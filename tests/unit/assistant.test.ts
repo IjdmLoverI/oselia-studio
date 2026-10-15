@@ -65,6 +65,10 @@ describe('buildInstructions', () => {
     expect(buildInstructions(knowledge, { locale: 'en', now })).not.toContain('Waiting for')
   })
 
+  it('keeps Ukrainian replies free of Russian', () => {
+    expect(buildInstructions(knowledge, { locale: 'uk', now })).toContain('never Russian words')
+  })
+
   it('sets the default reply language from the site locale', () => {
     expect(buildInstructions(knowledge, { locale: 'uk', now })).toContain('Ukrainian by default')
     expect(buildInstructions(knowledge, { locale: 'en', now })).toContain('English by default')
