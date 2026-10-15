@@ -73,6 +73,8 @@ export interface Config {
     faqs: Faq;
     media: Media;
     leads: Lead;
+    bookings: Booking;
+    conversations: Conversation;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -87,6 +89,8 @@ export interface Config {
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
+    bookings: BookingsSelect<false> | BookingsSelect<true>;
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -100,10 +104,12 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     pricing: Pricing;
+    'assistant-settings': AssistantSetting;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     pricing: PricingSelect<false> | PricingSelect<true>;
+    'assistant-settings': AssistantSettingsSelect<false> | AssistantSettingsSelect<true>;
   };
   locale: 'uk' | 'en';
   widgets: {
@@ -296,6 +302,52 @@ export interface Lead {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings".
+ */
+export interface Booking {
+  id: number;
+  name: string;
+  phone: string;
+  visitAt: string;
+  address: string;
+  renovationType?: ('cosmetic' | 'capital' | 'designer') | null;
+  area?: number | null;
+  notes?: string | null;
+  status: 'new' | 'confirmed' | 'done' | 'cancelled';
+  source: 'admin' | 'web' | 'telegram';
+  locale?: string | null;
+  conversation?: (number | null) | Conversation;
+  slot?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: number;
+  title?: string | null;
+  messages?:
+    | {
+        role: 'user' | 'assistant';
+        at: string;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  channel: 'web' | 'telegram';
+  externalId: string;
+  locale?: string | null;
+  booking?: (number | null) | Booking;
+  lastMessageAt?: string | null;
+  tokens?: number | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -368,6 +420,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'leads';
         value: number | Lead;
+      } | null)
+    | ({
+        relationTo: 'bookings';
+        value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'conversations';
+        value: number | Conversation;
       } | null)
     | ({
         relationTo: 'users';
@@ -559,6 +619,50 @@ export interface LeadsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings_select".
+ */
+export interface BookingsSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  visitAt?: T;
+  address?: T;
+  renovationType?: T;
+  area?: T;
+  notes?: T;
+  status?: T;
+  source?: T;
+  locale?: T;
+  conversation?: T;
+  slot?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  title?: T;
+  messages?:
+    | T
+    | {
+        role?: T;
+        at?: T;
+        text?: T;
+        id?: T;
+      };
+  channel?: T;
+  externalId?: T;
+  locale?: T;
+  booking?: T;
+  lastMessageAt?: T;
+  tokens?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -674,6 +778,36 @@ export interface Pricing {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "assistant-settings".
+ */
+export interface AssistantSetting {
+  id: number;
+  /**
+   * When off, the site hides the chat and the Telegram bot suggests leaving a request.
+   */
+  enabled?: boolean | null;
+  greeting: string;
+  /**
+   * The assistant explains this to visitors before booking.
+   */
+  visitInfo: string;
+  schedule: {
+    workDays: ('mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun')[];
+    dayStart: number;
+    dayEnd: number;
+    slotMinutes: number;
+    daysAhead: number;
+    minNoticeHours: number;
+  };
+  limits: {
+    perClient: number;
+    perDay: number;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -720,6 +854,34 @@ export interface PricingSelect<T extends boolean = true> {
         price?: T;
         perSqm?: T;
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "assistant-settings_select".
+ */
+export interface AssistantSettingsSelect<T extends boolean = true> {
+  enabled?: T;
+  greeting?: T;
+  visitInfo?: T;
+  schedule?:
+    | T
+    | {
+        workDays?: T;
+        dayStart?: T;
+        dayEnd?: T;
+        slotMinutes?: T;
+        daysAhead?: T;
+        minNoticeHours?: T;
+      };
+  limits?:
+    | T
+    | {
+        perClient?: T;
+        perDay?: T;
       };
   updatedAt?: T;
   createdAt?: T;

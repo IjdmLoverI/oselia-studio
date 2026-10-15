@@ -4,6 +4,7 @@ import { getPayload, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
 
 import {
+  assistant,
   faqs,
   images,
   pricing,
@@ -328,6 +329,15 @@ async function seedGlobals(payload: Payload) {
     },
     context: seedContext(),
   })
+
+  for (const locale of ['uk', 'en'] as const) {
+    await payload.updateGlobal({
+      slug: 'assistant-settings',
+      locale,
+      data: { greeting: assistant.greeting[locale], visitInfo: assistant.visitInfo[locale] },
+      context: seedContext(),
+    })
+  }
 }
 
 const payload = await getPayload({ config })
