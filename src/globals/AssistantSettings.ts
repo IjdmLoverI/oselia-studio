@@ -2,8 +2,18 @@ import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '../access'
 import { revalidateGlobal } from '../hooks/revalidate'
+import type { Schedule } from '../lib/assistant/slots'
 
-export const weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
+export const scheduleDefaults: Schedule = {
+  workDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
+  dayStart: 10,
+  dayEnd: 18,
+  slotMinutes: 120,
+  daysAhead: 14,
+  minNoticeHours: 12,
+}
+
+export const limitDefaults = { perClient: 20, perDay: 300 }
 
 export const AssistantSettings: GlobalConfig = {
   slug: 'assistant-settings',
@@ -54,7 +64,7 @@ export const AssistantSettings: GlobalConfig = {
           type: 'select',
           hasMany: true,
           required: true,
-          defaultValue: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
+          defaultValue: scheduleDefaults.workDays,
           label: { uk: 'Робочі дні', en: 'Working days' },
           options: [
             { value: 'mon', label: { uk: 'Понеділок', en: 'Monday' } },
@@ -73,7 +83,7 @@ export const AssistantSettings: GlobalConfig = {
               name: 'dayStart',
               type: 'number',
               required: true,
-              defaultValue: 10,
+              defaultValue: scheduleDefaults.dayStart,
               min: 0,
               max: 23,
               label: { uk: 'Перший виїзд, год', en: 'First visit, hour' },
@@ -82,7 +92,7 @@ export const AssistantSettings: GlobalConfig = {
               name: 'dayEnd',
               type: 'number',
               required: true,
-              defaultValue: 18,
+              defaultValue: scheduleDefaults.dayEnd,
               min: 1,
               max: 24,
               label: { uk: 'Кінець дня, год', en: 'Day ends, hour' },
@@ -91,7 +101,7 @@ export const AssistantSettings: GlobalConfig = {
               name: 'slotMinutes',
               type: 'number',
               required: true,
-              defaultValue: 120,
+              defaultValue: scheduleDefaults.slotMinutes,
               min: 30,
               max: 480,
               label: { uk: 'Тривалість виїзду, хв', en: 'Visit length, min' },
@@ -105,7 +115,7 @@ export const AssistantSettings: GlobalConfig = {
               name: 'daysAhead',
               type: 'number',
               required: true,
-              defaultValue: 14,
+              defaultValue: scheduleDefaults.daysAhead,
               min: 1,
               max: 60,
               label: { uk: 'Запис наперед, днів', en: 'Book ahead, days' },
@@ -114,7 +124,7 @@ export const AssistantSettings: GlobalConfig = {
               name: 'minNoticeHours',
               type: 'number',
               required: true,
-              defaultValue: 12,
+              defaultValue: scheduleDefaults.minNoticeHours,
               min: 0,
               max: 168,
               label: { uk: 'Не раніше ніж за, год', en: 'Minimum notice, hours' },
@@ -135,7 +145,7 @@ export const AssistantSettings: GlobalConfig = {
               name: 'perClient',
               type: 'number',
               required: true,
-              defaultValue: 20,
+              defaultValue: limitDefaults.perClient,
               min: 1,
               label: {
                 uk: 'Повідомлень від однієї людини за 10 хв',
@@ -146,7 +156,7 @@ export const AssistantSettings: GlobalConfig = {
               name: 'perDay',
               type: 'number',
               required: true,
-              defaultValue: 300,
+              defaultValue: limitDefaults.perDay,
               min: 1,
               label: {
                 uk: 'Повідомлень на день для всього сайту',
