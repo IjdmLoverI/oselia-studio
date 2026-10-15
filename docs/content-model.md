@@ -68,6 +68,25 @@ Requests from the contact form:
 
 `ipHash` is hidden and used only for rate limiting.
 
+### Site visits
+
+Visits booked by the assistant or added by hand (`bookings`):
+
+- name, phone, address or district, the visit time;
+- renovation type, area and notes, all optional;
+- `status`: new, confirmed, done or cancelled;
+- `source`: admin, site chat or Telegram, the language and the conversation it came from.
+
+Only one active visit may start at a given time. A validator explains a clash in the admin,
+and the hidden `slot` field (the time, or empty once cancelled) carries a unique index.
+
+### Conversations
+
+Assistant chats, read-only in the admin: the first question as the title, the messages with
+their times, the channel and its ID (browser session or Telegram chat), the visit it produced,
+the last message time and the tokens used. A channel and ID pair is unique. `ipHash` is hidden
+and used only for limits.
+
 ### Users
 
 Admin accounts. Only signed-in users exist in the system; there are no visitor accounts. Five
@@ -80,6 +99,12 @@ failed sign-ins lock the account for ten minutes.
 - Phone, email and social links.
 - Address and opening hours, localized.
 - The three counters in the hero: years of work, finished projects, warranty years.
+
+### Assistant settings
+
+On or off, the greeting and the description of the visit (both localized), the visit schedule
+(working days, first visit hour, end of day, visit length, days ahead, minimum notice) and the
+message limits. See [AI assistant](assistant.md).
 
 ### Pricing
 
@@ -99,6 +124,9 @@ thousand (`src/lib/pricing.ts`).
 | Projects                            | published for everyone, all for admins | admins                                                                     | admins         |
 | Services, Testimonials, Faqs, Media | everyone                               | admins                                                                     | admins         |
 | Leads                               | admins                                 | nobody through the API; the form's server action writes with the Local API | admins         |
+| Site visits                         | admins                                 | admins; the assistant writes with the Local API                            | admins         |
+| Conversations                       | admins                                 | nobody through the API; the assistant writes with the Local API            | delete: admins |
+| Assistant settings                  | admins                                 | —                                                                          | admins         |
 | Users                               | admins                                 | admins                                                                     | admins         |
 | Site settings, Pricing              | everyone                               | —                                                                          | admins         |
 

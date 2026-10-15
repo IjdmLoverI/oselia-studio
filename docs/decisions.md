@@ -128,3 +128,19 @@ The hero spheres were first drawn with SVG `feTurbulence` filters. On a mid-rang
 those filters took about three seconds of main thread. They are now rendered once to
 320 × 320 WebP files with `npm run materials`. The source SVGs stay in the repository, so the
 textures can be tuned and rendered again.
+
+## AI SDK and a free Groq model for the assistant
+
+The assistant calls the model through the Vercel AI SDK rather than one provider's client.
+The provider and model are two environment variables. Switching between Groq and Gemini is a
+setting; adding Claude or OpenAI is one package and a few lines in
+`src/lib/assistant/model.ts`, and the prompt, tools and widget stay as they are.
+
+The demo runs on Groq's free tier with `openai/gpt-oss-120b`: it handles tool calls
+well and answers fast, and Groq does not keep prompts or train on API data.
+Gemini's free tier is the fallback only, because its terms allow using prompts to improve
+Google's products and visitors type phone numbers into the chat.
+
+The chat streams plain text from a route handler instead of using the AI SDK's chat UI
+protocol. Tools run on the server and the browser only needs text, so the widget stays a few
+kilobytes and does not depend on a chat client library.

@@ -3,8 +3,9 @@
 [![CI](https://github.com/IjdmLoverI/oselia-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/IjdmLoverI/oselia-studio/actions/workflows/ci.yml)
 
 A concept website for a renovation studio in Kyiv. It is an animated bilingual landing page
-with project pages, a price calculator and a lead form that arrives in Telegram. All content
-is edited in a Payload CMS admin.
+with project pages, a price calculator, a lead form that arrives in Telegram and an AI
+assistant that books site visits from the site chat and Telegram. All content is edited in a
+Payload CMS admin.
 
 **Live site:** [oselia-studio.vercel.app](https://oselia-studio.vercel.app). PageSpeed
 Insights on 15 October 2026 scored it 99 for performance on mobile and 98 on desktop, with
@@ -14,7 +15,8 @@ accessibility at 100.
 > portfolio piece, so it asks search engines not to index it.
 
 > 🇺🇦 **Коротко українською.** Концепт-сайт студії ремонту: анімований лендинг українською
-> та англійською, сторінки проєктів, калькулятор вартості, заявки в Telegram. Весь вміст
+> та англійською, сторінки проєктів, калькулятор вартості, заявки в Telegram і AI-асистент,
+> який у чаті на сайті та в Telegram відповідає на питання й записує на виїзд. Весь вміст
 > редагується в адмінці Payload CMS.
 
 <p align="center">
@@ -50,6 +52,12 @@ accessibility at 100.
   - A server action validates it with zod.
   - Leads are saved in the admin and sent to a Telegram chat.
   - A honeypot, a time trap and a per-IP limit protect it from spam.
+- **AI assistant.** A chat on the site and a Telegram bot answer from the CMS content,
+  estimate the cost and book a free site visit into the admin. See
+  [docs/assistant.md](docs/assistant.md).
+  - Any model the AI SDK supports; the demo runs on Groq's free tier.
+  - Free slots in Kyiv time, a double-booking guard and a Telegram notice for each visit.
+  - Per-visitor and daily limits, history kept on the server, the chat panel loaded on first use.
 - **Project pages.** Each has a sketch-to-result slider that works from the keyboard, a gallery,
   facts and figures, and a link to the next project.
 - **SEO.**
@@ -72,6 +80,7 @@ accessibility at 100.
 | Styling   | Tailwind CSS 4                                                  |
 | Motion    | Motion for React, Lenis, CSS animations                         |
 | Forms     | Server actions, zod                                             |
+| AI        | AI SDK, Groq (default) or Google Gemini, Telegram Bot API       |
 | Testing   | Vitest, Playwright, axe-core                                    |
 | Tooling   | ESLint, Prettier, husky, lint-staged                            |
 | Hosting   | Vercel, Neon Postgres, Vercel Blob                              |
@@ -101,22 +110,24 @@ Payload asks you to create the first user when you open the admin.
 
 ## Scripts
 
-| Script                   | What it does                                             |
-| ------------------------ | -------------------------------------------------------- |
-| `npm run dev`            | Development server                                       |
-| `npm run build`          | Production build (needs the database)                    |
-| `npm run start`          | Serves the production build                              |
-| `npm run lint`           | ESLint                                                   |
-| `npm run typecheck`      | Generates route types, then runs `tsc`                   |
-| `npm run format`         | Prettier, writing changes                                |
-| `npm test`               | Unit tests                                               |
-| `npm run e2e`            | End-to-end tests against a production build on port 3100 |
-| `npm run db:up`          | Starts Postgres in Docker on `127.0.0.1:5434`            |
-| `npm run migrate`        | Applies database migrations                              |
-| `npm run migrate:create` | Creates a migration after a schema change                |
-| `npm run seed`           | Loads or refreshes the demo content                      |
-| `npm run generate:types` | Regenerates `src/payload-types.ts`                       |
-| `npm run materials`      | Re-renders the material textures used in the hero        |
+| Script                     | What it does                                                                |
+| -------------------------- | --------------------------------------------------------------------------- |
+| `npm run dev`              | Development server                                                          |
+| `npm run build`            | Production build (needs the database)                                       |
+| `npm run start`            | Serves the production build                                                 |
+| `npm run lint`             | ESLint                                                                      |
+| `npm run typecheck`        | Generates route types, then runs `tsc`                                      |
+| `npm run format`           | Prettier, writing changes                                                   |
+| `npm test`                 | Unit tests                                                                  |
+| `npm run e2e`              | End-to-end tests against a production build on port 3100                    |
+| `npm run db:up`            | Starts Postgres in Docker on `127.0.0.1:5434`                               |
+| `npm run migrate`          | Applies database migrations                                                 |
+| `npm run migrate:create`   | Creates a migration after a schema change                                   |
+| `npm run seed`             | Loads or refreshes the demo content                                         |
+| `npm run generate:types`   | Regenerates `src/payload-types.ts`                                          |
+| `npm run materials`        | Re-renders the material textures used in the hero                           |
+| `npm run telegram:webhook` | Points the Telegram bot at the site's webhook                               |
+| `npm run telegram:poll`    | Forwards bot messages to the local server, for testing without a public URL |
 
 ## Project structure
 
@@ -124,23 +135,26 @@ Payload asks you to create the first user when you open the admin.
 src/
   app/(frontend)/[locale]/   pages: home, projects/[slug], credits, Open Graph image
   app/(payload)/             admin panel and REST/GraphQL API generated by Payload
+  app/api/assistant/         chat stream and Telegram webhook
   collections/, globals/     content model
-  components/                layout, sections, motion, ui
+  components/                layout, sections, motion, ui, assistant
   actions/                   lead form server action
   lib/                       content queries, pricing, validation, Telegram, SEO helpers
+  lib/assistant/             prompt, tools, slots, limits and the reply loop
   i18n/                      routing and message loading
   migrations/                database migrations
 messages/                    interface text in uk and en
-scripts/                     seed data and texture rendering
+scripts/                     seed data, texture rendering, Telegram webhook setup
 tests/                       unit and end-to-end tests
 ```
 
 ## Documentation
 
 - [Architecture](docs/architecture.md): rendering, caching, i18n, the lead flow and motion.
+- [AI assistant](docs/assistant.md): the chat, the Telegram bot, tools, limits and providers.
 - [Content model](docs/content-model.md): collections, globals and access rules.
 - [Development](docs/development.md): local setup, tests and conventions.
-- [Deployment](docs/deployment.md): Vercel, Neon, Vercel Blob and Telegram.
+- [Deployment](docs/deployment.md): Vercel, Neon, Vercel Blob, Telegram and the model key.
 - [Decisions](docs/decisions.md): why the main pieces were chosen.
 - [Credits](docs/credits.md): photos, fonts and icons.
 
