@@ -57,6 +57,11 @@ const renovationNames: Record<Locale, Record<RenovationType, string>> = {
 
 const areaUnit: Record<Locale, string> = { uk: 'м²', en: 'm²' }
 
+const labourOnly: Record<Locale, string> = {
+  uk: 'лише робота, матеріали окремо',
+  en: 'labour only, materials extra',
+}
+
 export const describeSlot = (slot: string, locale: Locale) =>
   `${labelDay(slot.slice(0, 10), locale)}, ${slot.slice(11)}`
 
@@ -94,7 +99,7 @@ export function createActions(deps: ToolDeps) {
         renovation: renovationNames[deps.locale][type],
         minUAH: min,
         maxUAH: max,
-        labourOnly: true,
+        covers: labourOnly[deps.locale],
         unknownExtras: extras.filter((key) => !known.has(key)),
       }
     },

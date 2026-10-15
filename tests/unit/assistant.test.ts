@@ -136,7 +136,7 @@ describe('estimate_price', () => {
       renovation: 'косметичний',
       minUAH: 243000,
       maxUAH: 311000,
-      labourOnly: true,
+      covers: 'лише робота, матеріали окремо',
       unknownExtras: ['sauna'],
     })
   })
