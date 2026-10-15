@@ -55,6 +55,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: { connectionString: env.DATABASE_URL },
     migrationDir: path.resolve(dirname, 'migrations'),
+    push: false,
   }),
   plugins: [
     vercelBlobStorage({
