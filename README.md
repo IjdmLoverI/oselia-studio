@@ -17,6 +17,17 @@ accessibility at 100.
 > та англійською, сторінки проєктів, калькулятор вартості, заявки в Telegram. Весь вміст
 > редагується в адмінці Payload CMS.
 
+<p align="center">
+  <img src="docs/media/tour.webp" width="880"
+       alt="Scrolling the home page: the intro, the services and the sketch-to-photo section">
+</p>
+
+<p align="center">
+  <img src="docs/media/mobile-hero.jpg" width="240" alt="The home page on a phone">
+  <img src="docs/media/mobile-calculator.jpg" width="240" alt="The price calculator on a phone">
+  <img src="docs/media/mobile-project.jpg" width="240" alt="A project page on a phone">
+</p>
+
 ## Features
 
 - **Content from the CMS.** The Payload admin at `/admin` holds everything, in both languages:
