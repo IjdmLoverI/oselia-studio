@@ -22,6 +22,7 @@
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "materials": "tsx scripts/materials/render.ts",
     "telegram:webhook": "tsx --env-file-if-exists=.env scripts/telegram-webhook.ts",
+    "telegram:poll": "tsx --env-file-if-exists=.env scripts/telegram-poll.ts",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "db:up": "docker compose up -d --wait db",
     "prepare": "husky"
