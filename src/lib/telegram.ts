@@ -1,4 +1,5 @@
 import type { LeadInput } from './lead'
+import type { RenovationType } from './pricing'
 
 const escapeHtml = (value: string) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -23,6 +24,51 @@ export function formatLeadMessage(lead: LeadInput) {
   if (lead.estimate) lines.push(`💰 ${escapeHtml(lead.estimate)}`)
   if (lead.message) lines.push('', escapeHtml(lead.message))
   lines.push('', `🌐 ${lead.locale.toUpperCase()}`)
+
+  return lines.join('\n')
+}
+
+export type BookingNotice = {
+  visitAt: Date
+  name: string
+  phone: string
+  address: string
+  renovationType?: RenovationType
+  area?: number
+  notes?: string
+  source: 'web' | 'telegram'
+  locale: string
+}
+
+const visitTime = new Intl.DateTimeFormat('uk-UA', {
+  timeZone: 'Europe/Kyiv',
+  weekday: 'short',
+  day: 'numeric',
+  month: 'long',
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+const sourceLabels = { web: 'чат на сайті', telegram: 'Telegram' }
+
+export function formatBookingMessage(booking: BookingNotice) {
+  const lines = [
+    '<b>Новий запис на виїзд</b>',
+    `🗓 ${visitTime.format(booking.visitAt)}`,
+    `👤 ${escapeHtml(booking.name)}`,
+    `📞 ${escapeHtml(booking.phone)}`,
+    `📍 ${escapeHtml(booking.address)}`,
+  ]
+
+  if (booking.area || booking.renovationType) {
+    const parts = [
+      booking.area ? `${booking.area} м²` : null,
+      booking.renovationType ? typeLabels[booking.renovationType] : null,
+    ].filter(Boolean)
+    lines.push(`📐 ${parts.join(', ')}`)
+  }
+  if (booking.notes) lines.push('', escapeHtml(booking.notes))
+  lines.push('', `💬 ${sourceLabels[booking.source]} · ${booking.locale.toUpperCase()}`)
 
   return lines.join('\n')
 }
