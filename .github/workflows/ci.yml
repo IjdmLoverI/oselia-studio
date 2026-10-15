@@ -51,6 +51,7 @@ jobs:
       DATABASE_URL: postgres://oselia:oselia@localhost:5432/oselia
       PAYLOAD_SECRET: ci-only-secret-not-used-anywhere-else-0123
       NEXT_PUBLIC_SITE_URL: http://localhost:3100
+      GROQ_API_KEY: ci-placeholder-the-e2e-tests-mock-the-chat
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

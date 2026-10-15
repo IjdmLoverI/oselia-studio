@@ -210,5 +210,24 @@
     "title": "This page does not exist",
     "text": "It may have moved, or the link has a typo.",
     "home": "Back home"
+  },
+  "assistant": {
+    "open": "Ask the assistant",
+    "launcher": "Assistant",
+    "title": "Oselia assistant",
+    "subtitle": "Prices, timing and site visits",
+    "close": "Close the chat",
+    "restart": "Start a new chat",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "typing": "The assistant is writing a reply",
+    "error": "Could not reach the assistant.",
+    "retry": "Try again",
+    "note": "Demo site: the studio is fictional. The site admin can read this chat.",
+    "suggestions": [
+      "How much is a renovation of a 60 m² flat?",
+      "I would like to book a free site visit",
+      "How long does a full renovation take?"
+    ]
   }
 }
