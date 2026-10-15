@@ -1,11 +1,11 @@
 'use server'
 
 import config from '@payload-config'
-import { createHash } from 'crypto'
 import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 
 import { env } from '@/env'
+import { clientIp, hashClient } from '@/lib/client'
 import { leadFieldErrors, leadSchema, readLeadForm, type LeadField } from '@/lib/lead'
 import { formatLeadMessage, sendToTelegram } from '@/lib/telegram'
 
@@ -31,9 +31,7 @@ export async function submitLead(_previous: LeadState, formData: FormData): Prom
   if (!parsed.success) return { status: 'invalid', fields: leadFieldErrors(parsed.error) }
   const lead = parsed.data
 
-  const requestHeaders = await headers()
-  const ip = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
-  const ipHash = createHash('sha256').update(`${ip}:${env.PAYLOAD_SECRET}`).digest('hex')
+  const ipHash = hashClient(clientIp(await headers()), env.PAYLOAD_SECRET)
 
   try {
     const payload = await getPayload({ config })
