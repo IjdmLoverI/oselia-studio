@@ -6,6 +6,10 @@ A concept website for a renovation studio in Kyiv. It is an animated bilingual l
 with project pages, a price calculator and a lead form that arrives in Telegram. All content
 is edited in a Payload CMS admin.
 
+**Live site:** [oselia-studio.vercel.app](https://oselia-studio.vercel.app). PageSpeed
+Insights on 15 October 2026 scored it 99 for performance on mobile and 98 on desktop, with
+accessibility at 100.
+
 > **The studio is fictional.** Its contacts and reviews are made up as well. The site is a
 > portfolio piece, so it asks search engines not to index it.
 
