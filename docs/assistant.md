@@ -43,11 +43,11 @@ counts tokens per minute.
 
 ## Tools
 
-| Tool             | Does                                                                                                |
-| ---------------- | --------------------------------------------------------------------------------------------------- |
-| `estimate_price` | Runs the calculator's `estimatePrice` with the CMS rates. Returns a labour-only range.              |
-| `find_slots`     | Lists free visit times in Kyiv time for the nearest three days, or for a requested date.            |
-| `book_visit`     | Books a visit. The model is told to call it only after the visitor confirmed the details read back. |
+| Tool             | Does                                                                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `estimate_price` | Runs the calculator's `estimatePrice` with the CMS rates. Returns a labour-only range.                                                     |
+| `find_slots`     | Lists free visit times in Kyiv time for the nearest three days, or for a requested date, with each day labelled in the visitor's language. |
+| `book_visit`     | Books a visit. The model is told to call it only after the visitor confirmed the details read back.                                        |
 
 The server does not trust the model's input for a booking. `book_visit` checks the name and
 address length, normalizes the phone like the lead form does, refuses a second booking from the
@@ -76,6 +76,9 @@ blocks both the 10:00 and the 12:00 slot.
 - working days, the first visit hour, the end of the day and the visit length;
 - how many days ahead visits can be booked and the minimum notice in hours;
 - messages per visitor per ten minutes, and per day for the whole site.
+
+When the greeting or the visit description is empty, for example on a fresh database that
+was never seeded, the assistant uses the texts in `src/lib/assistant/defaults.ts`.
 
 **Assistant → Conversations** shows every chat with its channel, the visit it produced and the
 tokens it used. **Sales → Site visits** lists the bookings; a visit can also be added there by

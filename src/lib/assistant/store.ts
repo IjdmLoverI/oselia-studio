@@ -10,6 +10,7 @@ import { getFaqs, getPricing, getProjects, getServices, getSiteSettings } from '
 import type { Rates } from '@/lib/pricing'
 import { formatBookingMessage, sendToTelegram } from '@/lib/telegram'
 
+import { assistantTexts } from './defaults'
 import type { StoredMessage } from './guard'
 import type { Knowledge } from './prompt'
 import { toStudioTime } from './slots'
@@ -21,20 +22,25 @@ export type ConversationKey = { channel: Channel; externalId: string }
 
 const client = () => getPayload({ config })
 
+function withDefaults<T extends object>(defaults: T, values?: Partial<T> | null): T {
+  const set = Object.entries(values ?? {}).filter(([, value]) => value != null)
+  return { ...defaults, ...Object.fromEntries(set) }
+}
+
 export async function loadSettings(locale: Locale) {
   const payload = await client()
   const doc = await payload.findGlobal({ slug: 'assistant-settings', locale, depth: 0 })
-  const schedule = { ...scheduleDefaults, ...doc.schedule }
+  const schedule = withDefaults(scheduleDefaults, doc.schedule)
 
   return {
     enabled: doc.enabled ?? true,
-    greeting: doc.greeting ?? '',
-    visitInfo: doc.visitInfo ?? '',
+    greeting: doc.greeting?.trim() || assistantTexts.greeting[locale],
+    visitInfo: doc.visitInfo?.trim() || assistantTexts.visitInfo[locale],
     schedule: {
       ...schedule,
-      workDays: schedule.workDays?.length ? schedule.workDays : scheduleDefaults.workDays,
+      workDays: schedule.workDays.length ? schedule.workDays : scheduleDefaults.workDays,
     },
-    limits: { ...limitDefaults, ...doc.limits },
+    limits: withDefaults(limitDefaults, doc.limits),
   }
 }
 

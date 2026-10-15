@@ -1,3 +1,5 @@
+import type { Locale } from '@/i18n/routing'
+
 export const STUDIO_TIME_ZONE = 'Europe/Kyiv'
 
 export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
@@ -123,4 +125,29 @@ export function groupSlots(slots: string[]) {
     }
   }
   return days
+}
+
+const dayFormats: Record<Locale, Intl.DateTimeFormat> = {
+  uk: new Intl.DateTimeFormat('uk-UA', {
+    timeZone: 'UTC',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'long',
+  }),
+  en: new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'UTC',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'long',
+  }),
+}
+
+export function labelDay(date: string, locale: Locale) {
+  const [year, month, day] = date.split('-').map(Number) as [number, number, number]
+  return dayFormats[locale].format(Date.UTC(year, month - 1, day))
+}
+
+export function normalizeSlot(input: string) {
+  const match = /^(\d{4}-\d{2}-\d{2})[T ](\d{1,2}):(\d{2})/.exec(input.trim())
+  return match ? `${match[1]}T${match[2]!.padStart(2, '0')}:${match[3]}` : input.trim()
 }

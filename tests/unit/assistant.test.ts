@@ -67,6 +67,7 @@ const schedule: Schedule = {
 function setup(overrides: Partial<ToolDeps> = {}) {
   const created: BookingRequest[] = []
   const actions = createActions({
+    locale: 'uk',
     now: () => now,
     rates: {
       types: [{ key: 'cosmetic', pricePerSqm: 4500 }],
@@ -113,7 +114,10 @@ describe('find_slots', () => {
     const { actions } = setup()
     const result = await actions.findSlots({})
     expect(result.days.map((day) => day.date)).toEqual(['2026-10-15', '2026-10-16', '2026-10-19'])
-    expect(result.days[0]?.times).toEqual(['12:00', '14:00', '16:00'])
+    expect(result.days[0]).toMatchObject({
+      label: 'чт, 15 жовтня',
+      times: ['12:00', '14:00', '16:00'],
+    })
   })
 
   it('says when the requested day is full and offers the nearest days', async () => {
@@ -133,6 +137,23 @@ describe('book_visit', () => {
     expect(created[0]).toMatchObject({
       phone: '+380671234567',
       visitAt: new Date('2026-10-16T07:00:00Z'),
+    })
+  })
+
+  it('accepts a slot written with a space or seconds', async () => {
+    const { actions, created } = setup()
+    expect(await actions.book({ ...visitor, slot: '2026-10-16 10:00:00' })).toEqual({
+      ok: true,
+      slot: '2026-10-16T10:00',
+    })
+    expect(created).toHaveLength(1)
+  })
+
+  it('explains a slot it cannot read', async () => {
+    expect(await setup().actions.book({ ...visitor, slot: 'Friday at ten' })).toEqual({
+      ok: false,
+      error: 'invalid_slot_format',
+      expected: 'YYYY-MM-DDTHH:mm',
     })
   })
 
@@ -163,10 +184,7 @@ describe('book_visit', () => {
 
   it('reports a slot lost to a parallel booking', async () => {
     const { actions } = setup({ createBooking: async () => 'taken' })
-    expect(await actions.book(visitor)).toEqual({
-      ok: false,
-      error: 'slot_unavailable',
-    })
+    expect(await actions.book(visitor)).toEqual({ ok: false, error: 'slot_taken_meanwhile' })
   })
 })
 

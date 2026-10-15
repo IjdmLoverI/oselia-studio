@@ -5,11 +5,15 @@ import { renovationTypes } from '@/collections/Leads'
 import { normalizePhone } from '@/lib/lead'
 import { estimatePrice, type Rates, type RenovationType } from '@/lib/pricing'
 
+import type { Locale } from '@/i18n/routing'
+
 import {
   fromStudioTime,
   groupSlots,
   isSlotOpen,
+  labelDay,
   listSlots,
+  normalizeSlot,
   STUDIO_TIME_ZONE,
   type Schedule,
 } from './slots'
@@ -26,12 +30,14 @@ export type BookingRequest = {
 }
 
 export type ToolDeps = {
+  locale: Locale
   now: () => Date
   rates: Rates
   schedule: Schedule
   takenVisits: () => Promise<Date[]>
   existingBooking: () => Promise<string | null>
   createBooking: (request: BookingRequest) => Promise<'created' | 'taken'>
+  log?: (message: string) => void
 }
 
 const NEAREST_DAYS = 3
@@ -75,7 +81,10 @@ export function createActions(deps: ToolDeps) {
 
     async findSlots({ date }: z.infer<typeof slotsInput>) {
       const slots = listSlots(deps.schedule, { now: deps.now(), taken: await deps.takenVisits() })
-      const days = groupSlots(slots)
+      const days = groupSlots(slots).map((day) => ({
+        ...day,
+        label: labelDay(day.date, deps.locale),
+      }))
       if (!date) return { timeZone: STUDIO_TIME_ZONE, days: days.slice(0, NEAREST_DAYS) }
 
       const day = days.find((candidate) => candidate.date === date)
@@ -89,25 +98,33 @@ export function createActions(deps: ToolDeps) {
     },
 
     async book(input: z.infer<typeof bookingInput>) {
+      const refuse = (error: string, details: Record<string, string> = {}) => {
+        deps.log?.(`book_visit refused: ${error}`)
+        return { ok: false, error, ...details }
+      }
+
       const name = input.name.trim()
       const address = input.address.trim()
-      if (name.length < 2 || name.length > 80) return { ok: false, error: 'invalid_name' }
-      if (address.length < 2 || address.length > 200) return { ok: false, error: 'invalid_address' }
+      if (name.length < 2 || name.length > 80) return refuse('invalid_name')
+      if (address.length < 2 || address.length > 200) return refuse('invalid_address')
 
       const phone = normalizePhone(input.phone)
-      if (!phone) return { ok: false, error: 'invalid_phone' }
+      if (!phone) return refuse('invalid_phone')
 
       const existing = await deps.existingBooking()
-      if (existing) return { ok: false, error: 'already_booked', slot: existing }
+      if (existing) return refuse('already_booked', { slot: existing })
 
-      const visitAt = fromStudioTime(input.slot)
-      const open =
-        visitAt &&
-        isSlotOpen(deps.schedule, input.slot, { now: deps.now(), taken: await deps.takenVisits() })
-      if (!visitAt || !open) return { ok: false, error: 'slot_unavailable' }
+      const slot = normalizeSlot(input.slot)
+      const visitAt = fromStudioTime(slot)
+      if (!visitAt) return refuse('invalid_slot_format', { expected: 'YYYY-MM-DDTHH:mm' })
+      const open = isSlotOpen(deps.schedule, slot, {
+        now: deps.now(),
+        taken: await deps.takenVisits(),
+      })
+      if (!open) return refuse('slot_unavailable')
 
       const result = await deps.createBooking({
-        slot: input.slot,
+        slot,
         visitAt,
         name,
         phone,
@@ -116,9 +133,7 @@ export function createActions(deps: ToolDeps) {
         area: input.area,
         notes: input.notes?.trim() || undefined,
       })
-      return result === 'created'
-        ? { ok: true, slot: input.slot }
-        : { ok: false, error: 'slot_unavailable' }
+      return result === 'created' ? { ok: true, slot } : refuse('slot_taken_meanwhile')
     },
   }
 }
