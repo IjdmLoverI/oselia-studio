@@ -59,6 +59,7 @@ export default buildConfig({
   plugins: [
     vercelBlobStorage({
       enabled: Boolean(env.BLOB_READ_WRITE_TOKEN),
+      alwaysInsertFields: true,
       collections: { media: { disablePayloadAccessControl: true } },
       token: env.BLOB_READ_WRITE_TOKEN,
     }),
