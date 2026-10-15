@@ -50,6 +50,13 @@ const NEAREST_DAYS = 3
 const sameVisit = (a: Omit<PendingBooking, 'turn'>, b: Omit<PendingBooking, 'turn'>) =>
   a.slot === b.slot && a.name === b.name && a.phone === b.phone && a.address === b.address
 
+const renovationNames: Record<Locale, Record<RenovationType, string>> = {
+  uk: { cosmetic: 'косметичний', capital: 'капітальний', designer: 'дизайнерський' },
+  en: { cosmetic: 'cosmetic', capital: 'full', designer: 'designer' },
+}
+
+const areaUnit: Record<Locale, string> = { uk: 'м²', en: 'm²' }
+
 export const describeSlot = (slot: string, locale: Locale) =>
   `${labelDay(slot.slice(0, 10), locale)}, ${slot.slice(11)}`
 
@@ -83,6 +90,7 @@ export function createActions(deps: ToolDeps) {
       const known = new Set(deps.rates.extras.map((extra) => extra.key))
       const { min, max } = estimatePrice({ area, type, extras }, deps.rates)
       return {
+        renovation: renovationNames[deps.locale][type],
         minUAH: min,
         maxUAH: max,
         labourOnly: true,
@@ -145,7 +153,16 @@ export function createActions(deps: ToolDeps) {
         area: input.area,
         notes: input.notes?.trim() || undefined,
       }
-      const visit = { when: describeSlot(slot, deps.locale), name, phone, address }
+      const visit = {
+        when: describeSlot(slot, deps.locale),
+        name,
+        phone,
+        address,
+        ...(input.renovationType && {
+          renovation: renovationNames[deps.locale][input.renovationType],
+        }),
+        ...(input.area && { area: `${input.area} ${areaUnit[deps.locale]}` }),
+      }
 
       const pending = await deps.pendingBooking()
       if (!pending || pending.turn === deps.turn || !sameVisit(pending, request)) {
