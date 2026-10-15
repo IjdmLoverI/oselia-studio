@@ -14,6 +14,16 @@ test('the filter shows only projects of the chosen type', async ({ page }) => {
   await expect(cards).toHaveCount(6)
 })
 
+test('project covers on the home page are revealed when they scroll into view', async ({
+  page,
+}) => {
+  await page.goto('/uk')
+  const covers = page.locator('#projects .reveal-image')
+
+  await covers.first().scrollIntoViewIfNeeded()
+  await expect(covers.first()).toHaveCSS('clip-path', 'inset(0px)')
+})
+
 test('a project card opens the project page', async ({ page }) => {
   await page.goto('/uk')
   await page

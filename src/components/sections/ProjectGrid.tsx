@@ -3,8 +3,9 @@
 import * as m from 'motion/react-m'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 
+import { InView } from '@/components/motion/InView'
 import { Link } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 import type { Project } from '@/payload-types'
@@ -74,23 +75,22 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
               data-cursor={t('cursor.view')}
               className="group block rounded-card"
             >
-              <m.div
-                initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
-                whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 1.2, ease, delay: (index % 3) * 0.1 }}
-                className="relative aspect-[4/5] overflow-hidden rounded-card bg-sand-200"
-              >
-                <Image
-                  src={project.cover.url}
-                  alt={project.cover.alt}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                  placeholder={project.cover.blurDataURL ? 'blur' : 'empty'}
-                  blurDataURL={project.cover.blurDataURL}
-                  className="object-cover transition-transform duration-[1.2s] ease-(--ease-out-expo) group-hover:scale-105"
-                />
-              </m.div>
+              <InView amount={0.2}>
+                <div
+                  className="reveal-image relative aspect-[4/5] overflow-hidden rounded-card bg-sand-200"
+                  style={{ '--d': `${(index % 3) * 100}ms` } as CSSProperties}
+                >
+                  <Image
+                    src={project.cover.url}
+                    alt={project.cover.alt}
+                    fill
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                    placeholder={project.cover.blurDataURL ? 'blur' : 'empty'}
+                    blurDataURL={project.cover.blurDataURL}
+                    className="object-cover transition-transform duration-[1.2s] ease-(--ease-out-expo) group-hover:scale-105"
+                  />
+                </div>
+              </InView>
               <div className="mt-5 flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-display text-xl font-semibold">{project.title}</h3>

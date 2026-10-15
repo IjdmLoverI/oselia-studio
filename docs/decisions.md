@@ -77,6 +77,9 @@ Short notes on the main choices and what they cost.
 - **The catch.** Exit animations through `AnimatePresence` can stall if an element mounts in
   the same render that delivers the features. The project filter therefore does without
   them: cards that no longer match simply leave, and the rest move with layout animations.
+- **Scroll reveals stay in CSS.** In production, `whileInView` on the project covers never
+  fired with lazy features, so the covers stayed clipped. Every scroll reveal now uses `InView`
+  plus a CSS transition, and an end-to-end test checks that the covers open.
 - **Where `AnimatePresence` stays.**
   - The contact form cannot change until at least three seconds after the first focus, long
     after the features have arrived.
