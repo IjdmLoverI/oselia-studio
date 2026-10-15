@@ -64,15 +64,18 @@ then cannot meet an old database.
 
 Environment variables (Production, and Preview if previews should work):
 
-| Variable                | Value                                                    |
-| ----------------------- | -------------------------------------------------------- |
-| `DATABASE_URL`          | Neon pooled connection string                            |
-| `PAYLOAD_SECRET`        | `openssl rand -hex 32`, never reused from development    |
-| `NEXT_PUBLIC_SITE_URL`  | `https://` plus the production domain, no trailing slash |
-| `BLOB_READ_WRITE_TOKEN` | added by the Blob store                                  |
-| `TELEGRAM_BOT_TOKEN`    | see below                                                |
-| `TELEGRAM_CHAT_ID`      | see below                                                |
-| `SITE_INDEXING`         | `false` for the concept site; `true` for a real business |
+| Variable                  | Value                                                    |
+| ------------------------- | -------------------------------------------------------- |
+| `DATABASE_URL`            | Neon pooled connection string                            |
+| `PAYLOAD_SECRET`          | `openssl rand -hex 32`, never reused from development    |
+| `NEXT_PUBLIC_SITE_URL`    | `https://` plus the production domain, no trailing slash |
+| `BLOB_READ_WRITE_TOKEN`   | added by the Blob store                                  |
+| `TELEGRAM_BOT_TOKEN`      | see below                                                |
+| `TELEGRAM_CHAT_ID`        | see below                                                |
+| `TELEGRAM_WEBHOOK_SECRET` | random string for the assistant's webhook, see below     |
+| `GROQ_API_KEY`            | model key for the assistant, see below                   |
+| `AI_PROVIDER`, `AI_MODEL` | optional, to change the model                            |
+| `SITE_INDEXING`           | `false` for the concept site; `true` for a real business |
 
 `NEXT_PUBLIC_SITE_URL` is inlined at build time. Redeploy after changing it or adding a domain.
 
@@ -98,6 +101,30 @@ section.
 
 Without these two variables the form still works: leads are saved in the admin only.
 
+Find the chat ID before step 7: once a webhook is set, Telegram turns `getUpdates` off.
+
+## 7. Telegram assistant
+
+The bot from step 6 also answers visitors in private chats.
+
+1. Generate a secret, for example `openssl rand -hex 32`, and save it as
+   `TELEGRAM_WEBHOOK_SECRET` in Vercel and in the local `.env`.
+2. Redeploy, so the webhook route knows the secret.
+3. With `TELEGRAM_BOT_TOKEN` and the same secret in `.env`, run
+   `npm run telegram:webhook -- https://<domain>`. It registers the webhook, the `/start`
+   command and the bot description in Ukrainian and English, then prints where Telegram
+   delivers updates.
+4. Send `/start` to the bot, then a question.
+
+`npm run telegram:webhook -- --delete` removes the webhook again.
+
+## 8. Model key
+
+The assistant needs a model provider key. For Groq, create a free key at
+[console.groq.com](https://console.groq.com/keys) and save it as `GROQ_API_KEY`. Without a key
+the chat button does not appear and the bot answers with a note pointing to the form. See
+[AI assistant](assistant.md#model-provider) for other providers.
+
 ## Rate limiting behind a proxy
 
 The form limits requests per client IP, read from the first entry of `x-forwarded-for`. Vercel
@@ -111,6 +138,9 @@ sidestepped.
 - A project page opens, and its slider works.
 - The calculator shows the production prices.
 - A test request appears in **Leads** and in Telegram.
+- The chat answers a price question, and a test booking appears in **Site visits** and in
+  Telegram. Cancel it afterwards.
+- The bot answers `/start` and a question.
 - `/admin` signs in, and editing a service shows on the site after a reload.
 - `/robots.txt` matches the intended `SITE_INDEXING`.
 
